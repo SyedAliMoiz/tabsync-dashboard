@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<!-- updated -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -378,296 +377,326 @@
 
     <div id="statusMessage" class="status-message"></div>
 
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script>
-    // Configuration
-    const API_BASE = 'https://tabsync-backend.onrender.com';
-    
-    // Global state
-    let currentUser = null;
-    let groups = [];
-
-    // DOM elements
-    const loginSection = document.getElementById('loginSection');
-    const mainContent = document.getElementById('mainContent');
-    const userInfo = document.getElementById('userInfo');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const googleLoginBtn = document.getElementById('googleLoginBtn');
-    const refreshBtn = document.getElementById('refreshBtn');
-    const loading = document.getElementById('loading');
-    const emptyState = document.getElementById('emptyState');
-    const groupsList = document.getElementById('groupsList');
-    const totalGroups = document.getElementById('totalGroups');
-    const totalTabs = document.getElementById('totalTabs');
-    const statusMessage = document.getElementById('statusMessage');
-
-    // Initialize Google Sign-In
-    function initializeGoogleSignIn() {
-        google.accounts.id.initialize({
-            client_id: '754594078949-pt0hfoth1cb5h5if18dru8mda9953pit.apps.googleusercontent.com',
-            callback: handleGoogleSignIn
-        });
-    }
-
-    // Initialize app
-    document.addEventListener('DOMContentLoaded', async () => {
-        // Check existing session
-        const user = getStoredUser();
-        if (user) {
-            await showDashboard(user);
-        } else {
-            showLogin();
-        }
+    <script>
+        // Configuration
+        const API_BASE = 'https://tabsync-backend.onrender.com';
         
-        // Initialize Google Sign-In
-        initializeGoogleSignIn();
-    });
+        // Global state
+        let currentUser = null;
+        let groups = [];
 
-    // Event listeners
-    googleLoginBtn.addEventListener('click', () => {
-        google.accounts.id.prompt();
-    });
-    logoutBtn.addEventListener('click', handleLogout);
-    refreshBtn.addEventListener('click', loadGroups);
+        // DOM elements
+        const loginSection = document.getElementById('loginSection');
+        const mainContent = document.getElementById('mainContent');
+        const userInfo = document.getElementById('userInfo');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const refreshBtn = document.getElementById('refreshBtn');
+        const loading = document.getElementById('loading');
+        const emptyState = document.getElementById('emptyState');
+        const groupsList = document.getElementById('groupsList');
+        const totalGroups = document.getElementById('totalGroups');
+        const totalTabs = document.getElementById('totalTabs');
+        const statusMessage = document.getElementById('statusMessage');
 
-    // Handle Google Sign-In
-    async function handleGoogleSignIn(response) {
-        try {
-            const token = response.credential;
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Check URL for auth callback
+            const urlParams = new URLSearchParams(window.location.search);
+            const authCode = urlParams.get('code');
             
-            // Send token to backend
-            const backendResponse = await fetch(`${API_BASE}/auth/google`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ token })
-            });
-
-            if (!backendResponse.ok) {
-                throw new Error('Authentication failed');
-            }
-
-            const userData = await backendResponse.json();
-            storeUser(userData.user);
-            await showDashboard(userData.user);
-            showStatus('Signed in successfully!');
-
-        } catch (error) {
-            console.error('Sign-in failed:', error);
-            showStatus('Sign in failed. Please try again.', 'error');
-        }
-    }
-
-    // Show status message
-    function showStatus(message, type = 'success') {
-        statusMessage.textContent = message;
-        statusMessage.className = `status-message ${type} show`;
-        setTimeout(() => {
-            statusMessage.className = 'status-message';
-        }, 3000);
-    }
-
-    // Local storage helpers
-    function getStoredUser() {
-        const stored = localStorage.getItem('tabsync_user');
-        return stored ? JSON.parse(stored) : null;
-    }
-
-    function storeUser(user) {
-        localStorage.setItem('tabsync_user', JSON.stringify(user));
-    }
-
-    function clearStoredUser() {
-        localStorage.removeItem('tabsync_user');
-    }
-
-    // Show login section
-    function showLogin() {
-        loginSection.style.display = 'block';
-        mainContent.style.display = 'none';
-        document.querySelector('.user-section').style.display = 'none';
-    }
-
-    // Show dashboard
-    async function showDashboard(user) {
-        currentUser = user;
-        loginSection.style.display = 'none';
-        mainContent.style.display = 'block';
-        document.querySelector('.user-section').style.display = 'flex';
-        userInfo.textContent = user.email;
-        
-        await loadGroups();
-    }
-
-    // Handle logout
-    async function handleLogout() {
-        try {
-            google.accounts.id.disableAutoSelect();
-            clearStoredUser();
-            currentUser = null;
-            groups = [];
-            showLogin();
-            showStatus('Signed out successfully!');
-        } catch (error) {
-            console.error('Logout failed:', error);
-            showStatus('Sign out failed.', 'error');
-        }
-    }
-
-    // Load groups from API
-    async function loadGroups() {
-        try {
-            loading.style.display = 'block';
-            emptyState.style.display = 'none';
-            groupsList.innerHTML = '';
-
-            const response = await fetch(`${API_BASE}/api/groups`, {
-                headers: {
-                    'Authorization': `Bearer ${currentUser.token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to load groups');
-            }
-
-            const data = await response.json();
-            groups = data.groups;
-
-            loading.style.display = 'none';
-
-            if (groups.length === 0) {
-                emptyState.style.display = 'block';
+            if (authCode) {
+                // Handle OAuth callback
+                await handleAuthCallback(authCode);
             } else {
-                renderGroups();
+                // Check existing session
+                const user = getStoredUser();
+                if (user) {
+                    await showDashboard(user);
+                } else {
+                    showLogin();
+                }
             }
+        });
 
-            updateStats();
+        // Event listeners
+        googleLoginBtn.addEventListener('click', () => {
+            console.log('Button clicked');
+            handleGoogleLoginFallback();
+        });
+        
+        logoutBtn.addEventListener('click', handleLogout);
+        refreshBtn.addEventListener('click', loadGroups);
 
-        } catch (error) {
-            console.error('Failed to load groups:', error);
-            loading.style.display = 'none';
-            showStatus('Failed to load groups. Please try again.', 'error');
+        // Fallback Google login
+        async function handleGoogleLoginFallback() {
+            try {
+                googleLoginBtn.disabled = true;
+                googleLoginBtn.textContent = 'Signing in...';
+                
+                const clientId = '754594078949-pt0hfoth1cb5h5if18dru8mda9953pit.apps.googleusercontent.com';
+                const redirectUri = 'https://syedalimoiz.github.io/tabsync-dashboard';
+                const scope = 'openid email profile';
+                
+                const authUrl = `https://accounts.google.com/oauth/authorize?` +
+                    `client_id=${clientId}&` +
+                    `redirect_uri=${encodeURIComponent(redirectUri)}&` +
+                    `scope=${encodeURIComponent(scope)}&` +
+                    `response_type=code&` +
+                    `access_type=offline`;
+                
+                window.location.href = authUrl;
+                
+            } catch (error) {
+                console.error('Login failed:', error);
+                showStatus('Sign in failed. Please try again.', 'error');
+                googleLoginBtn.disabled = false;
+                googleLoginBtn.textContent = 'Sign in with Google';
+            }
         }
-    }
 
-    // Render groups list
-    function renderGroups() {
-        groupsList.innerHTML = groups.map(group => `
-            <div class="group-card">
-                <div class="group-header">
-                    <div>
-                        <div class="group-name">${escapeHtml(group.name)}</div>
-                        <div class="group-meta">
-                            ${group.tabCount} tabs • ${formatDate(group.createdAt)}
+        // Handle auth callback
+        async function handleAuthCallback(code) {
+            try {
+                const response = await fetch(`${API_BASE}/auth/google/callback`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        code: code,
+                        redirect_uri: 'https://syedalimoiz.github.io/tabsync-dashboard'
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Authentication failed');
+                }
+
+                const data = await response.json();
+                storeUser(data.user);
+                
+                // Clean URL
+                window.history.replaceState({}, document.title, window.location.pathname);
+                
+                await showDashboard(data.user);
+                showStatus('Signed in successfully!');
+                
+            } catch (error) {
+                console.error('Auth callback failed:', error);
+                showStatus('Authentication failed. Please try again.', 'error');
+                showLogin();
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type = 'success') {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type} show`;
+            setTimeout(() => {
+                statusMessage.className = 'status-message';
+            }, 3000);
+        }
+
+        // Local storage helpers
+        function getStoredUser() {
+            const stored = localStorage.getItem('tabsync_user');
+            return stored ? JSON.parse(stored) : null;
+        }
+
+        function storeUser(user) {
+            localStorage.setItem('tabsync_user', JSON.stringify(user));
+        }
+
+        function clearStoredUser() {
+            localStorage.removeItem('tabsync_user');
+        }
+
+        // Show login section
+        function showLogin() {
+            loginSection.style.display = 'block';
+            mainContent.style.display = 'none';
+            document.querySelector('.user-section').style.display = 'none';
+        }
+
+        // Show dashboard
+        async function showDashboard(user) {
+            currentUser = user;
+            loginSection.style.display = 'none';
+            mainContent.style.display = 'block';
+            document.querySelector('.user-section').style.display = 'flex';
+            userInfo.textContent = user.email;
+            
+            await loadGroups();
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            try {
+                clearStoredUser();
+                currentUser = null;
+                groups = [];
+                showLogin();
+                showStatus('Signed out successfully!');
+            } catch (error) {
+                console.error('Logout failed:', error);
+                showStatus('Sign out failed.', 'error');
+            }
+        }
+
+        // Load groups from API
+        async function loadGroups() {
+            try {
+                loading.style.display = 'block';
+                emptyState.style.display = 'none';
+                groupsList.innerHTML = '';
+
+                const response = await fetch(`${API_BASE}/api/groups`, {
+                    headers: {
+                        'Authorization': `Bearer ${currentUser.token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load groups');
+                }
+
+                const data = await response.json();
+                groups = data.groups;
+
+                loading.style.display = 'none';
+
+                if (groups.length === 0) {
+                    emptyState.style.display = 'block';
+                } else {
+                    renderGroups();
+                }
+
+                updateStats();
+
+            } catch (error) {
+                console.error('Failed to load groups:', error);
+                loading.style.display = 'none';
+                showStatus('Failed to load groups. Please try again.', 'error');
+            }
+        }
+
+        // Render groups list
+        function renderGroups() {
+            groupsList.innerHTML = groups.map(group => `
+                <div class="group-card">
+                    <div class="group-header">
+                        <div>
+                            <div class="group-name">${escapeHtml(group.name)}</div>
+                            <div class="group-meta">
+                                ${group.tabCount} tabs • ${formatDate(group.createdAt)}
+                            </div>
+                        </div>
+                        <div class="group-actions">
+                            <button class="open-btn" onclick="openGroup('${group.id}')">
+                                Open All
+                            </button>
+                            <button class="delete-btn" onclick="deleteGroup('${group.id}')">
+                                Delete
+                            </button>
                         </div>
                     </div>
-                    <div class="group-actions">
-                        <button class="open-btn" onclick="openGroup('${group.id}')">
-                            Open All
-                        </button>
-                        <button class="delete-btn" onclick="deleteGroup('${group.id}')">
-                            Delete
-                        </button>
+                    <div class="tab-preview">
+                        <div class="tab-list">
+                            ${group.urls.slice(0, 5).map(url => 
+                                `<div class="tab-item">${escapeHtml(getDomainFromUrl(url))}</div>`
+                            ).join('')}
+                            ${group.urls.length > 5 ? `<div class="tab-item">...and ${group.urls.length - 5} more</div>` : ''}
+                        </div>
                     </div>
                 </div>
-                <div class="tab-preview">
-                    <div class="tab-list">
-                        ${group.urls.slice(0, 5).map(url => 
-                            `<div class="tab-item">${escapeHtml(getDomainFromUrl(url))}</div>`
-                        ).join('')}
-                        ${group.urls.length > 5 ? `<div class="tab-item">...and ${group.urls.length - 5} more</div>` : ''}
-                    </div>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    // Update statistics
-    function updateStats() {
-        totalGroups.textContent = groups.length;
-        const tabCount = groups.reduce((sum, group) => sum + group.tabCount, 0);
-        totalTabs.textContent = tabCount;
-    }
-
-    // Open all tabs in a group
-    async function openGroup(groupId) {
-        try {
-            const group = groups.find(g => g.id === groupId);
-            if (!group) return;
-
-            // Open tabs in new window
-            for (const url of group.urls) {
-                window.open(url, '_blank');
-            }
-
-            showStatus(`Opened ${group.urls.length} tabs from "${group.name}"`);
-        } catch (error) {
-            console.error('Failed to open group:', error);
-            showStatus('Failed to open tabs. Please try again.', 'error');
+            `).join('');
         }
-    }
 
-    // Delete a group
-    async function deleteGroup(groupId) {
-        try {
-            const group = groups.find(g => g.id === groupId);
-            if (!group) return;
+        // Update statistics
+        function updateStats() {
+            totalGroups.textContent = groups.length;
+            const tabCount = groups.reduce((sum, group) => sum + group.tabCount, 0);
+            totalTabs.textContent = tabCount;
+        }
 
-            if (!confirm(`Delete "${group.name}"? This cannot be undone.`)) {
-                return;
-            }
+        // Open all tabs in a group
+        async function openGroup(groupId) {
+            try {
+                const group = groups.find(g => g.id === groupId);
+                if (!group) return;
 
-            const response = await fetch(`${API_BASE}/api/groups/${groupId}`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': `Bearer ${currentUser.token}`
+                // Open tabs in new window
+                for (const url of group.urls) {
+                    window.open(url, '_blank');
                 }
-            });
 
-            if (!response.ok) {
-                throw new Error('Failed to delete group');
+                showStatus(`Opened ${group.urls.length} tabs from "${group.name}"`);
+            } catch (error) {
+                console.error('Failed to open group:', error);
+                showStatus('Failed to open tabs. Please try again.', 'error');
             }
+        }
 
-            // Remove from local array
-            groups = groups.filter(g => g.id !== groupId);
-            
-            if (groups.length === 0) {
-                emptyState.style.display = 'block';
-                groupsList.innerHTML = '';
-            } else {
-                renderGroups();
+        // Delete a group
+        async function deleteGroup(groupId) {
+            try {
+                const group = groups.find(g => g.id === groupId);
+                if (!group) return;
+
+                if (!confirm(`Delete "${group.name}"? This cannot be undone.`)) {
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE}/api/groups/${groupId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${currentUser.token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete group');
+                }
+
+                // Remove from local array
+                groups = groups.filter(g => g.id !== groupId);
+                
+                if (groups.length === 0) {
+                    emptyState.style.display = 'block';
+                    groupsList.innerHTML = '';
+                } else {
+                    renderGroups();
+                }
+                
+                updateStats();
+                showStatus(`Deleted "${group.name}"`);
+
+            } catch (error) {
+                console.error('Failed to delete group:', error);
+                showStatus('Failed to delete group. Please try again.', 'error');
             }
-            
-            updateStats();
-            showStatus(`Deleted "${group.name}"`);
-
-        } catch (error) {
-            console.error('Failed to delete group:', error);
-            showStatus('Failed to delete group. Please try again.', 'error');
         }
-    }
 
-    // Utility functions
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    function formatDate(dateString) {
-        const date = new Date(dateString);
-        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    }
-
-    function getDomainFromUrl(url) {
-        try {
-            return new URL(url).hostname;
-        } catch {
-            return url;
+        // Utility functions
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
-    }
-</script>
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+
+        function getDomainFromUrl(url) {
+            try {
+                return new URL(url).hostname;
+            } catch {
+                return url;
+            }
+        }
+    </script>
 </body>
 </html>
