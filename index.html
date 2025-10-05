@@ -428,7 +428,7 @@
     }
 
     function handleGoogleLogin() {
-      const clientId = '359103435046-qgvi7njul1j9vemlfslgf8s2qlbjkl8a.apps.googleusercontent.com';
+      const clientId = '754594078949-26dhhpri61i96967opn4pinbmjc208hp.apps.googleusercontent.com';
       const redirectUri = window.location.origin + window.location.pathname;
       const authUrl = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=openid%20email%20profile&access_type=offline`;
       window.location.href = authUrl;
