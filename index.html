@@ -222,6 +222,13 @@
     .toast.show{opacity:1; transform:translateY(0)}
     .toast.error{background:linear-gradient(180deg, rgba(255,69,58,.92), rgba(255,69,58,.78)); box-shadow:0 18px 40px rgba(255,69,58,.35)}
 
+    mark {
+      background: rgba(10,132,255,0.25);
+      color: inherit;
+      border-radius: 4px;
+      padding: 0 2px;
+}
+    
     @media (max-width:1200px){
       .toolbar{grid-template-columns:1fr auto 160px auto auto}
     }
@@ -484,38 +491,47 @@
     }
 
     // search + sort + date range
-    function applyFilters(){
-      const q = (searchInput.value || '').trim().toLowerCase();
-      const sort = sortSelect.value;
+function applyFilters() {
+  const q = (searchInput.value || '').trim().toLowerCase();
+  const sort = sortSelect.value;
+  const sVal = startDate.value ? new Date(startDate.value + 'T00:00:00') : null;
+  const eVal = endDate.value ? new Date(endDate.value + 'T23:59:59') : null;
 
-      const sVal = startDate.value ? new Date(startDate.value + 'T00:00:00') : null;
-      const eVal = endDate.value ? new Date(endDate.value + 'T23:59:59') : null;
+  filteredGroups = groups
+    .filter(g => {
+      let inName = false;
+      let inUrls = false;
 
-      filteredGroups = groups
-        .filter(g => {
-          if(q){
-            const inName = (g.name || '').toLowerCase().includes(q);
-            const inUrls = (g.urls || []).some(u => (u || '').toLowerCase().includes(q));
-            if(!inName && !inUrls) return false;
-          }
-          if(sVal || eVal){
-            const d = new Date(g.createdAt || 0);
-            if(sVal && d < sVal) return false;
-            if(eVal && d > eVal) return false;
-          }
-          return true;
-        })
-        .sort((a,b)=>{
-          if(sort === 'new') return new Date(b.createdAt) - new Date(a.createdAt);
-          if(sort === 'old') return new Date(a.createdAt) - new Date(b.createdAt);
-          if(sort === 'az') return (a.name||'').localeCompare(b.name||'');
-          if(sort === 'za') return (b.name||'').localeCompare(a.name||'');
-          if(sort === 'tabs') return (b.tabCount||b.urls?.length||0) - (a.tabCount||a.urls?.length||0);
-          return 0;
-        });
+      if (q) {
+        inName = (g.name || '').toLowerCase().includes(q);
+        inUrls = (g.urls || []).some(u => (u || '').toLowerCase().includes(q));
 
-      updateInlineStats();
-    }
+        // auto-expand any group that matches
+        if (inName || inUrls) collapsedState[g.id] = false;
+        else return false;
+      }
+
+      if (sVal || eVal) {
+        const d = new Date(g.createdAt || 0);
+        if (sVal && d < sVal) return false;
+        if (eVal && d > eVal) return false;
+      }
+
+      return true;
+    })
+    .sort((a, b) => {
+      if (sort === 'new') return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sort === 'old') return new Date(a.createdAt) - new Date(b.createdAt);
+      if (sort === 'az') return (a.name || '').localeCompare(b.name || '');
+      if (sort === 'za') return (b.name || '').localeCompare(a.name || '');
+      if (sort === 'tabs')
+        return (b.tabCount || b.urls?.length || 0) - (a.tabCount || a.urls?.length || 0);
+      return 0;
+    });
+
+  updateInlineStats();
+}
+
 
     function updateInlineStats(){
       const gCount = filteredGroups.length;
@@ -534,7 +550,7 @@
           <header class="card-head">
             <div>
               <div class="title-row">
-                <div class="title">${escapeHtml(group.name || 'Untitled Group')}</div>
+                <div class="title">${highlight(group.name || 'Untitled Group', searchInput.value)}</div>
                 <span class="chip neutral" title="Tabs in this group">${tabCount} tabs</span>
 
                 <button class="chev-toggle ${collapsed ? '' : 'open'}" aria-label="Toggle links" aria-expanded="${!collapsed}" onclick="toggleLinks('${group.id}')">
@@ -565,7 +581,7 @@
               ${(group.urls || []).map(u => `
                 <div class="tab">
                   <img class="fav" src="https://www.google.com/s2/favicons?sz=64&domain_url=${u}" alt="">
-                  <a class="link" href="${u}" target="_blank" rel="noopener noreferrer">${escapeHtml(u)}</a>
+                  <a class="link" href="${u}" target="_blank" rel="noopener noreferrer">${highlight(u, searchInput.value)}</a>
                 </div>
               `).join('')}
             </div>
@@ -665,6 +681,13 @@
     // ===== Utils =====
     function escapeHtml(text){const d=document.createElement('div');d.textContent=String(text ?? '');return d.innerHTML;}
     function formatDate(s){ if(!s) return '—'; const d=new Date(s); return d.toLocaleDateString(); }
+    function highlight(text, query) {
+      if (!query) return escapeHtml(text);
+      const safeQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const regex = new RegExp(`(${safeQuery})`, 'ig');
+      return escapeHtml(text).replace(regex, '<mark>$1</mark>');
+}
+
   </script>
 </body>
 </html>
