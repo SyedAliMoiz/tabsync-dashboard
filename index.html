@@ -11,7 +11,6 @@
       --bg-grad-1:rgba(10,132,255,.16);
       --bg-grad-2:rgba(88,86,214,.12);
       --card:#17171a;
-      --card-2:#1c1c20;
       --text:#f5f5f7;
       --muted:#a1a1a6;
       --line:#2a2a2f;
@@ -20,27 +19,51 @@
       --red:#ff453a;
 
       --radius-xl:20px;
-      --radius-lg:14px;
-
       --shadow:0 18px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.02);
     }
 
-    *{box-sizing:border-box;margin:0;padding:0}
-    html,body{height:100%}
-    body{
-      background:
-        radial-gradient(1200px 800px at 10% -10%, var(--bg-grad-1), transparent 60%),
-        radial-gradient(1000px 700px at 90% -20%, var(--bg-grad-2), transparent 55%),
-        linear-gradient(180deg, #0a0a0c 0%, #0b0b0c 100%);
-      color:var(--text);
-      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Inter,system-ui,sans-serif;
-      line-height:1.65;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      letter-spacing:.01rem;
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-    /* ===== Top Nav (blend into gradient) ===== */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background:
+    radial-gradient(circle at 20% 0%, rgba(60, 60, 70, 0.35), transparent 60%),
+    radial-gradient(circle at 80% 0%, rgba(40, 40, 50, 0.3), transparent 60%),
+    linear-gradient(180deg, #0a0a0c 0%, #09090b 60%, #050506 100%);
+  background-attachment: fixed;
+  color: var(--text, #f5f5f7);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Inter, system-ui, sans-serif;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: 0.01rem;
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.04), transparent 70%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  z-index: 0;
+}
+
+
+    /* ===== Top Nav (blends into gradient) ===== */
     .header{
       position:sticky; top:0; z-index:50;
       backdrop-filter:saturate(140%) blur(16px);
@@ -59,6 +82,7 @@
     .user-section{display:flex; align-items:center; gap:10px}
     .user-info{color:var(--muted); font-size:14px}
 
+    /* ===== Buttons ===== */
     .btn{
       appearance:none;border:0;cursor:pointer;border-radius:10px;
       padding:8px 14px;font-weight:600;font-size:14px;
@@ -69,6 +93,13 @@
     .btn:active{transform:translateY(0)}
     .btn-ghost{background:rgba(255,255,255,.06); color:var(--text); box-shadow:var(--shadow)}
     .btn-blue{background:linear-gradient(180deg, var(--blue) 0%, #056ee6 100%); color:#fff; box-shadow:0 10px 30px rgba(10,132,255,.35)}
+    /* softer, less glowy refresh */
+    .btn-blue.soft{
+      background:rgba(10,132,255,.14);
+      color:#d8ebff;
+      border:1px solid rgba(10,132,255,.35);
+      box-shadow:none;
+    }
     .btn-red{background:linear-gradient(180deg, #ff5a52 0%, var(--red) 100%); color:#fff; box-shadow:0 10px 28px rgba(255,69,58,.35)}
 
     /* ===== Shell (left-aligned) ===== */
@@ -80,18 +111,18 @@
       padding-right:clamp(16px, 3vw, 40px);
     }
 
-    /* ===== Stats (smaller by ~50%) ===== */
+    /* ===== Stats (smaller) ===== */
     .stats{
       display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:16px;
       margin:16px 0 18px;
     }
     .stat{
-      grid-column:span 3;                    /* narrower width */
+      grid-column:span 3;
       background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
       border:1px solid var(--line);
       border-radius:var(--radius-xl);
-      padding:14px 16px;                      /* smaller height */
-      min-height:96px;                        /* about half height */
+      padding:14px 16px;
+      min-height:96px;
       box-shadow:var(--shadow);
       display:flex; align-items:flex-end; justify-content:space-between;
       overflow:hidden; position:relative; isolation:isolate;
@@ -100,11 +131,11 @@
     .stat-label{color:var(--muted); font-size:13px; margin-top:6px}
     .stat-chip{font-size:11px; color:#8df0b3; background:rgba(48,209,88,.12); border:1px solid rgba(48,209,88,.25); padding:5px 9px; border-radius:999px}
 
-    /* ===== Toolbar (shorter search, spaced controls) ===== */
+    /* ===== Toolbar (shorter search + spaced controls) ===== */
     .toolbar{
-      margin:8px 0 6px;
+      margin:8px 0 8px;
       display:grid;
-      grid-template-columns:minmax(260px, 560px) 190px auto; /* #6 shorter search */
+      grid-template-columns:minmax(260px, 560px) 190px 1fr auto auto; /* search | sort | filler | dates | buttons */
       gap:14px; align-items:center;
     }
     .search{
@@ -112,6 +143,7 @@
       border-radius:12px; display:flex; align-items:center; gap:10px; padding:10px 12px;
     }
     .search input{background:transparent; border:0; outline:0; color:var(--text); width:100%; font-size:15px}
+
     .select{
       position:relative;
       background:rgba(255,255,255,.06);
@@ -123,12 +155,18 @@
       appearance:none;
       background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" opacity="0.8"><path d="M7 10l5 5 5-5z"/></svg>');
       background-repeat:no-repeat;
-      background-position:right 10px center; /* #6 spacing from Copy button */
+      background-position:right 10px center;
       background-size:16px;
     }
-    .select option{background:#121214; color:var(--text);} /* #2 readable options */
+    .select option{background:#121214; color:var(--text);}
 
-    .btn-row{justify-self:end; display:flex; gap:12px}
+    .date-wrap{display:flex; gap:10px}
+    .date{
+      background:rgba(255,255,255,.06); border:1px solid var(--line);
+      color:var(--text); padding:10px 12px; border-radius:12px; font-size:14px;
+    }
+
+    .btn-row{display:flex; gap:12px}
 
     /* ===== Groups ===== */
     .groups{display:flex; flex-direction:column; gap:18px; margin-top:6px;}
@@ -148,11 +186,8 @@
       padding:18px 20px 10px 20px;
       border-bottom:1px solid rgba(255,255,255,.05);
     }
+    .title-row{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
     .title{font-weight:800; font-size:20px; letter-spacing:.1px}
-    .meta-row{
-      display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;
-    }
-    .dot{width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,.28)}
     .chip{
       padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:.2px;
       border:1px solid rgba(255,255,255,.10); color:#e9ecf3; background:rgba(255,255,255,.06);
@@ -160,7 +195,12 @@
     .chip.neutral{border-color:rgba(10,132,255,.28); background:rgba(10,132,255,.14); color:#d8ebff}
 
     .actions{display:flex; gap:10px; flex-wrap:wrap}
-    .pill{padding:8px 14px; border-radius:999px; font-weight:700; font-size:13px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.06)}
+    .pill{
+      padding:8px 14px; border-radius:999px; font-weight:700; font-size:13px;
+      border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.06);
+      cursor:pointer; transition:transform .15s ease, background .15s ease, box-shadow .2s ease; /* pointer + hover */
+    }
+    .pill:hover{transform:translateY(-1px); background:rgba(255,255,255,.09); box-shadow:0 8px 18px rgba(0,0,0,.3)}
     .pill.blue{border-color:rgba(10,132,255,.35); background:linear-gradient(180deg, rgba(10,132,255,.20), rgba(10,132,255,.10)); color:#e6f3ff}
     .pill.red{border-color:rgba(255,69,58,.35); background:linear-gradient(180deg, rgba(255,69,58,.20), rgba(255,69,58,.10)); color:#ffe9e7}
 
@@ -172,14 +212,13 @@
       transition:transform .18s ease, background .18s ease, box-shadow .25s ease;
       background:transparent;
     }
-    .tab:hover{
-      background:rgba(255,255,255,.06);
-      transform:translateY(-1px);
-      box-shadow:0 12px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.04);
-    }
+    .tab:hover{background:rgba(255,255,255,.06); transform:translateY(-1px); box-shadow:0 12px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.04)}
     .fav{width:18px; height:18px; border-radius:4px; flex:0 0 18px}
     .link{color:var(--blue-2); text-decoration:none; word-break:break-all; font-weight:600; letter-spacing:.1px}
     .link:hover{text-decoration:underline; color:#6ebdff}
+
+    /* collapsed state (default) */
+    .card.collapsed .card-body{display:none}
 
     /* ===== Login / Loading / Empty / Toast ===== */
     .login{display:grid; place-items:center; min-height:70vh; padding:0 clamp(24px,6vw,64px)}
@@ -200,12 +239,13 @@
 
     @media (max-width:1024px){
       .stat{grid-column:span 4}
-      .toolbar{grid-template-columns:1fr 180px auto}
+      .toolbar{grid-template-columns:1fr 180px 1fr auto auto}
     }
-    @media (max-width:680px){
+    @media (max-width:760px){
       .stat{grid-column:span 6}
-      .toolbar{grid-template-columns:1fr}
+      .toolbar{grid-template-columns:1fr; gap:10px}
       .btn-row{justify-self:start}
+      .date-wrap{justify-content:flex-start}
     }
   </style>
 </head>
@@ -237,7 +277,7 @@
 
     <!-- Dashboard -->
     <section id="mainContent" style="display:none">
-      <!-- Stats (only two; third “clock” removed as useless) -->
+      <!-- Stats -->
       <div class="stats" aria-live="polite">
         <div class="stat">
           <div>
@@ -255,7 +295,7 @@
         </div>
       </div>
 
-      <!-- Toolbar (shorter search + spaced controls) -->
+      <!-- Toolbar -->
       <div class="toolbar">
         <div class="search">
           <svg width="16" height="16" fill="currentColor" style="opacity:.6"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM6.5 11a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
@@ -268,17 +308,20 @@
           <option value="za">Z → A</option>
           <option value="tabs">Tabs (High → Low)</option>
         </select>
+        <div></div> <!-- spacer -->
+        <div class="date-wrap">
+          <input id="startDate" class="date" type="date" aria-label="Start date">
+          <input id="endDate" class="date" type="date" aria-label="End date">
+        </div>
         <div class="btn-row">
-          <button id="refreshBtn" class="btn btn-blue">Refresh</button>
+          <button id="refreshBtn" class="btn btn-blue soft">Refresh</button>
           <button id="copyAllBtn" class="btn btn-ghost">Copy All Links</button>
         </div>
       </div>
 
       <!-- Loading -->
       <div id="loading" class="loading-row" style="display:none">
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
-        <div class="skeleton"></div>
+        <div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div>
       </div>
 
       <!-- Empty -->
@@ -303,6 +346,7 @@
     let currentUser = null;
     let groups = [];
     let filteredGroups = [];
+    const collapsedState = {}; // groupId -> bool (false = hidden by default)
 
     const loginSection = document.getElementById('loginSection');
     const mainContent = document.getElementById('mainContent');
@@ -321,6 +365,8 @@
     const searchInput = document.getElementById('searchInput');
     const sortSelect = document.getElementById('sortSelect');
     const copyAllBtn = document.getElementById('copyAllBtn');
+    const startDate = document.getElementById('startDate');
+    const endDate = document.getElementById('endDate');
 
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -336,12 +382,21 @@
 
     googleLoginBtn?.addEventListener('click', handleGoogleLogin);
     logoutBtn.addEventListener('click', handleLogout);
-    refreshBtn.addEventListener('click', loadGroups);
-    searchInput.addEventListener('input', () => { applyFilters(); renderGroups(); });
+
+    // search fix: input + keyup + debounce
+    const debounce = (fn, ms=120) => { let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn(...a), ms); }; };
+    const runSearch = debounce(() => { applyFilters(); renderGroups(); }, 120);
+    searchInput.addEventListener('input', runSearch);
+    searchInput.addEventListener('keyup', runSearch);
+
     sortSelect.addEventListener('change', () => { applyFilters(); renderGroups(); });
+    startDate.addEventListener('change', () => { applyFilters(); renderGroups(); });
+    endDate.addEventListener('change', () => { applyFilters(); renderGroups(); });
+
+    refreshBtn.addEventListener('click', loadGroups);
     copyAllBtn.addEventListener('click', copyAllLinks);
 
-    // ===== Auth (Dashboard) =====
+    // ===== Auth =====
     async function handleGoogleLogin() {
       try {
         googleLoginBtn.disabled = true;
@@ -458,16 +513,29 @@
       }
     }
 
+    // search + sort + date range
     function applyFilters(){
       const q = (searchInput.value || '').trim().toLowerCase();
       const sort = sortSelect.value;
 
+      const sVal = startDate.value ? new Date(startDate.value + 'T00:00:00') : null;
+      const eVal = endDate.value ? new Date(endDate.value + 'T23:59:59') : null;
+
       filteredGroups = groups
         .filter(g => {
-          if(!q) return true;
-          const inName = (g.name || '').toLowerCase().includes(q);
-          const inUrls = (g.urls || []).some(u => (u || '').toLowerCase().includes(q));
-          return inName || inUrls;
+          // text filter
+          if(q){
+            const inName = (g.name || '').toLowerCase().includes(q);
+            const inUrls = (g.urls || []).some(u => (u || '').toLowerCase().includes(q));
+            if(!inName && !inUrls) return false;
+          }
+          // date range filter
+          if(sVal || eVal){
+            const d = new Date(g.createdAt || 0);
+            if(sVal && d < sVal) return false;
+            if(eVal && d > eVal) return false;
+          }
+          return true;
         })
         .sort((a,b)=>{
           if(sort === 'new') return new Date(b.createdAt) - new Date(a.createdAt);
@@ -481,24 +549,25 @@
 
     function renderGroups() {
       groupsList.innerHTML = filteredGroups.map((group, idx) => {
-        const meta = formatDateParts(group.createdAt);
+        const date = formatDate(group.createdAt);
         const tabCount = (group.tabCount ?? group.urls?.length ?? 0);
+        const collapsed = collapsedState[group.id] ?? true; // default hidden
 
         return `
-        <article class="card" style="animation-delay:${idx*40}ms">
+        <article class="card ${collapsed ? 'collapsed' : ''}" style="animation-delay:${idx*40}ms" id="card-${group.id}">
           <header class="card-head">
             <div>
-              <div class="title">${escapeHtml(group.name || 'Untitled Group')}</div>
-              <div class="meta-row">
+              <div class="title-row">
+                <div class="title">${escapeHtml(group.name || 'Untitled Group')}</div>
                 <span class="chip neutral">${tabCount} tabs</span>
-                <span class="dot"></span>
-                <span class="chip">${escapeHtml(meta.date)}</span>
-                <span class="dot"></span>
-                <span class="chip">${escapeHtml(meta.time)}</span>
+              </div>
+              <div class="meta-row" style="margin-top:8px">
+                <span class="chip">${escapeHtml(date)}</span>
               </div>
             </div>
             <div class="actions">
               <button class="pill blue" onclick="openGroup('${group.id}')">Open All</button>
+              <button class="pill" onclick="toggleLinks('${group.id}')">${collapsed ? 'Show' : 'Hide'} Links</button>
               <button class="pill" onclick="copyGroupLinks('${group.id}')">Copy</button>
               <button class="pill" onclick="exportGroup('${group.id}')">Export</button>
               <button class="pill red" onclick="deleteGroup('${group.id}')">Delete</button>
@@ -521,6 +590,17 @@
     function updateStats() {
       totalGroups.textContent = groups.length;
       totalTabs.textContent = groups.reduce((sum, g) => sum + (g.tabCount ?? g.urls?.length ?? 0), 0);
+    }
+
+    // ===== Toggle show/hide links =====
+    function toggleLinks(groupId){
+      collapsedState[groupId] = !(collapsedState[groupId] ?? true);
+      const el = document.getElementById(`card-${groupId}`);
+      if(!el) return;
+      el.classList.toggle('collapsed');
+      // update button label without re-rendering all
+      const btn = [...el.querySelectorAll('.actions .pill')].find(b => /Links$/.test(b.textContent));
+      if(btn) btn.textContent = (collapsedState[groupId] ? 'Show' : 'Hide') + ' Links';
     }
 
     // ===== Actions =====
@@ -598,14 +678,7 @@
 
     // ===== Utils =====
     function escapeHtml(text){const d=document.createElement('div');d.textContent=String(text ?? '');return d.innerHTML;}
-    function formatDateParts(s){
-      if(!s) return {date:'—', time:'—'};
-      const d=new Date(s);
-      return {
-        date: d.toLocaleDateString(),
-        time: d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
-      };
-    }
+    function formatDate(s){ if(!s) return '—'; const d=new Date(s); return d.toLocaleDateString(); }
   </script>
 </body>
 </html>
