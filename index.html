@@ -435,28 +435,36 @@
     }
 
     async function handleAuthCallback(code) {
-      try {
-        const res = await fetch(`${API_BASE}/auth/google/callback`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code })
-        });
-        const data = await res.json();
-        if (data.user && data.token) {
-          const user = { ...data.user, token: data.token };
-          setStoredUser(user);
-          window.history.replaceState({}, '', window.location.pathname);
-          await showDashboard(user);
-        } else {
-          throw new Error('Invalid auth response');
-        }
-      } catch (err) {
-        console.error('Auth failed:', err);
-        showStatus('Authentication failed', true);
-        showLogin();
-      }
+  try {
+    const res = await fetch(`${API_BASE}/auth/google/callback`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code,
+        redirect_uri: window.location.origin + window.location.pathname
+      })
+    });
+
+    if (!res.ok) {
+      const detail = await res.text();
+      console.error('OAuth exchange failed:', detail);
+      showStatus('Authentication failed: ' + detail, true);
+      showLogin();
+      return;
     }
 
+    const data = await res.json();
+    setStoredUser(data.user);
+    window.history.replaceState({}, document.title, window.location.pathname);
+    await showDashboard(data.user);
+    showStatus('Signed in successfully!');
+  } catch (err) {
+    console.error('Auth callback error:', err);
+    showStatus('Authentication failed. Please try again.', true);
+    showLogin();
+  }
+}
+    
     function handleLogout() {
       clearStoredUser();
       currentUser = null;
