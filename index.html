@@ -293,12 +293,27 @@
       totalTabs.textContent = groups.reduce((sum, g) => sum + g.tabCount, 0);
     }
 
-    async function openGroup(groupId) {
-      const group = groups.find(g => g.id === groupId);
-      if (!group) return;
-      for (const url of group.urls) window.open(url, '_blank');
-      showStatus(`Opened ${group.urls.length} tabs from "${group.name}"`);
-    }
+function openGroup(groupId) {
+  const group = groups.find(g => g.id === groupId);
+  if (!group) return;
+
+  // Open all tabs in one synchronous user gesture
+  const container = document.createElement('div');
+  document.body.appendChild(container);
+
+  group.urls.forEach(url => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.style.display = 'none';
+    container.appendChild(a);
+    a.click();
+  });
+
+  container.remove();
+  showStatus(`Opened ${group.urls.length} tabs from "${group.name}"`);
+}
 
     async function deleteGroup(groupId) {
       const group = groups.find(g => g.id === groupId);
