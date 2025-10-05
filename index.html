@@ -4,277 +4,330 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TabSync Dashboard</title>
+  <meta name="color-scheme" content="dark">
   <style>
-  :root {
-    --blue: #0071e3;
-    --light-gray: #f5f5f7;
-    --dark-bg: #1c1c1e;
-    --dark-card: #2c2c2e;
-    --dark-text: #f5f5f7;
-  }
-
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-  }
-
-  body {
-    background: var(--light-gray);
-    color: #1d1d1f;
-    line-height: 1.6;
-    transition: background 0.3s, color 0.3s;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    body {
-      background: var(--dark-bg);
-      color: var(--dark-text);
+    :root{
+      --bg:#0b0b0c;
+      --bg-elev:#111114;
+      --card:#17171a;
+      --card-2:#1c1c20;
+      --text:#f5f5f7;
+      --muted:#a1a1a6;
+      --line:#2a2a2f;
+      --blue:#0a84ff;
+      --blue-2:#3aa0ff;
+      --red:#ff453a;
+      --green:#30d158;
+      --shadow:0 18px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.02);
+      --radius-xl:22px;
+      --radius-lg:16px;
+      --radius-md:12px;
+      --pad-xl:40px;
+      --pad-lg:28px;
+      --pad-md:18px;
+      --pad-sm:12px;
     }
 
-    .group-card, .stat-card {
-      background: var(--dark-card);
-      border-color: #3a3a3c;
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      background:
+        radial-gradient(1200px 800px at 10% -10%, rgba(10,132,255,.16), transparent 60%),
+        radial-gradient(1000px 700px at 90% -20%, rgba(88,86,214,.12), transparent 55%),
+        linear-gradient(180deg, #0a0a0c 0%, #0b0b0c 100%);
+      color:var(--text);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Inter,system-ui,sans-serif;
+      line-height:1.65;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      letter-spacing:.01rem;
     }
 
-    .open-btn { background: var(--blue); }
-    .delete-btn { background: #ff453a; }
-  }
+    /* ===== Top Nav (glass) ===== */
+    .header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter:saturate(140%) blur(18px);
+      background:rgba(17,17,20,.72);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .header-content{
+      max-width:1400px;
+      margin:0 auto;
+      padding:14px clamp(20px, 5vw, 48px);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+    }
+    .brand-logo{
+      width:26px;height:26px;border-radius:8px;
+      background:radial-gradient(120% 120% at 30% 20%, #3aa0ff 0%, #0a84ff 40%, #0048b3 100%);
+      box-shadow:0 10px 30px rgba(10,132,255,.45), inset 0 1px 0 rgba(255,255,255,.25);
+    }
+    .logo{font-weight:800; font-size:20px; letter-spacing:.2px}
+    .user-section{display:flex; align-items:center; gap:10px}
+    .user-info{color:var(--muted); font-size:14px}
+    .btn{
+      appearance:none;border:0;cursor:pointer;border-radius:10px;
+      padding:8px 14px;font-weight:600;font-size:14px;
+      transition:transform .15s ease, box-shadow .25s ease, background .25s ease, opacity .2s ease;
+      will-change:transform;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn:active{transform:translateY(0)}
+    .btn-ghost{background:rgba(255,255,255,.06); color:var(--text); box-shadow:var(--shadow)}
+    .btn-ghost:hover{background:rgba(255,255,255,.09)}
+    .btn-blue{background:linear-gradient(180deg, var(--blue) 0%, #056ee6 100%); color:#fff; box-shadow:0 10px 30px rgba(10,132,255,.35)}
+    .btn-blue:hover{background:linear-gradient(180deg, #2b95ff 0%, var(--blue) 100%)}
+    .btn-red{background:linear-gradient(180deg, #ff5a52 0%, var(--red) 100%); color:#fff; box-shadow:0 10px 28px rgba(255,69,58,.35)}
+    .btn-red:hover{background:linear-gradient(180deg, #ff786f 0%, #ff3b30 100%)}
 
-  .header {
-    background: #fff;
-    border-bottom: 1px solid #e5e5e7;
-    padding: 20px 40px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
+    /* ===== Page Shell ===== */
+    .shell{
+      max-width:1400px;
+      margin:0 auto;
+      padding:32px 0 80px;
+      /* Left aligned feel: big left inset, fluid right */
+      padding-left:clamp(24px, 6vw, 64px);
+      padding-right:clamp(16px, 3vw, 40px);
+    }
 
-  @media (prefers-color-scheme: dark) {
-    .header { background: var(--dark-card); border-color: #3a3a3c; }
-  }
+    /* ===== Hero Stats Row ===== */
+    .stats{
+      display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:22px;
+      margin:24px 0 30px;
+    }
+    .stat{
+      grid-column:span 4;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius:var(--radius-xl);
+      padding:26px 28px;
+      box-shadow:var(--shadow);
+      display:flex; align-items:flex-end; justify-content:space-between;
+      overflow:hidden; position:relative;
+      isolation:isolate;
+    }
+    .stat::after{
+      content:""; position:absolute; inset:-1px; pointer-events:none; border-radius:inherit;
+      background: radial-gradient(500px 120px at 20% 0%, rgba(10,132,255,.12), transparent 60%);
+      z-index:-1;
+    }
+    .stat-num{font-size: clamp(36px, 5vw, 64px); font-weight:800; letter-spacing:-.02em}
+    .stat-label{color:var(--muted); font-size:14px; margin-top:6px}
+    .stat-chip{font-size:12px; color:#8df0b3; background:rgba(48,209,88,.12); border:1px solid rgba(48,209,88,.25); padding:6px 10px; border-radius:999px}
 
-  .header-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
+    /* ===== Toolbar ===== */
+    .toolbar{
+      margin:20px 0 14px;
+      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    }
+    .search{
+      flex:1; min-width:260px;
+      background:rgba(255,255,255,.06); border:1px solid var(--line);
+      border-radius:12px; display:flex; align-items:center; gap:10px; padding:10px 12px;
+    }
+    .search input{
+      background:transparent; border:0; outline:0; color:var(--text); width:100%; font-size:15px;
+    }
+    .select{
+      background:rgba(255,255,255,.06); border:1px solid var(--line);
+      border-radius:12px; color:var(--text); padding:10px 12px; font-size:14px;
+    }
 
-  .logo {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--blue);
-    letter-spacing: -0.3px;
-  }
+    /* ===== Groups ===== */
+    .groups{display:flex; flex-direction:column; gap:22px; margin-top:10px;}
+    .card{
+      border-radius:var(--radius-xl);
+      border:1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04)),
+        radial-gradient(1000px 120px at 10% -10%, rgba(10,132,255,.09), transparent 60%),
+        var(--card);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      opacity:0; transform:translateY(10px) scale(.995);
+      animation:rise .45s cubic-bezier(.19,.8,.22,1) forwards;
+    }
+    @keyframes rise{to{opacity:1; transform:translateY(0) scale(1)}}
 
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px;
-  }
+    .card-head{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
+      padding:24px 26px 12px 26px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    .title{font-weight:700; font-size:20px; letter-spacing:.1px}
+    .meta{color:var(--muted); font-size:13px; margin-top:4px}
 
-  .stats-grid {
-    display: flex;
-    gap: 24px;
-    margin-bottom: 40px;
-  }
+    .actions{display:flex; gap:10px; flex-wrap:wrap}
+    .pill{padding:9px 14px; border-radius:999px; font-weight:600; font-size:13px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.06)}
+    .pill.blue{border-color:rgba(10,132,255,.35); background:linear-gradient(180deg, rgba(10,132,255,.22), rgba(10,132,255,.12)); color:#e6f3ff}
+    .pill.red{border-color:rgba(255,69,58,.35); background:linear-gradient(180deg, rgba(255,69,58,.22), rgba(255,69,58,.12)); color:#ffe9e7}
 
-  .stat-card {
-    flex: 1;
-    background: #fff;
-    border-radius: 14px;
-    border: 1px solid #e5e5e7;
-    padding: 28px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-  }
+    .card-body{padding:6px 26px 22px 26px}
+    .tabs{display:flex; flex-direction:column; gap:8px}
+    .tab{
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px; border-radius:12px;
+      transition:transform .18s ease, background .18s ease, box-shadow .25s ease;
+      background:transparent;
+    }
+    .tab:hover{
+      background:rgba(255,255,255,.06);
+      transform:translateY(-1px);
+      box-shadow:0 12px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.04);
+    }
+    .fav{width:18px; height:18px; border-radius:4px; flex:0 0 18px}
+    .link{
+      color:var(--blue-2);
+      text-decoration:none;
+      word-break:break-all;
+      font-weight:600;
+      letter-spacing:.1px;
+    }
+    .link:hover{text-decoration:underline; color:#6ebdff}
 
-  .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  }
+    /* ===== Login (dark premium) ===== */
+    .login{
+      display:grid; place-items:center; min-height:70vh;
+      padding:0 clamp(24px,6vw,64px);
+    }
+    .login-card{
+      width:min(560px, 92vw);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
+      border:1px solid var(--line); border-radius:var(--radius-xl);
+      padding:42px 36px; box-shadow:var(--shadow); text-align:center;
+    }
+    .login h1{font-size:28px; font-weight:800; margin-bottom:8px}
+    .login p{color:var(--muted); margin-top:8px}
+    .btn-google{
+      margin-top:18px;
+      width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,.08);
+      background:linear-gradient(180deg, rgba(10,132,255,.22), rgba(10,132,255,.12));
+      color:#e6f3ff; font-weight:700; letter-spacing:.2px;
+      box-shadow:0 12px 28px rgba(10,132,255,.25);
+    }
 
-  .stat-value {
-    font-size: 48px;
-    font-weight: 700;
-    color: var(--blue);
-  }
+    /* ===== Empty/Loading/Toast ===== */
+    .empty{color:var(--muted); padding:36px; text-align:center}
+    .loading-row{display:grid; gap:18px}
+    .skeleton{
+      height:76px; border-radius:16px; background:linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.08), rgba(255,255,255,.04));
+      animation:shimmer 1.4s infinite linear; background-size:200% 100%;
+    }
+    @keyframes shimmer{to{background-position:-200% 0}}
 
-  .stat-label {
-    font-size: 16px;
-    color: #555;
-  }
+    .toast{
+      position:fixed; top:90px; right:26px; z-index:60;
+      background:linear-gradient(180deg, rgba(10,132,255,.9), rgba(10,132,255,.75));
+      color:#fff; padding:12px 16px; border-radius:12px; box-shadow:0 18px 40px rgba(10,132,255,.35);
+      opacity:0; transform:translateY(-8px); transition:all .28s ease;
+    }
+    .toast.show{opacity:1; transform:translateY(0)}
+    .toast.error{background:linear-gradient(180deg, rgba(255,69,58,.92), rgba(255,69,58,.78)); box-shadow:0 18px 40px rgba(255,69,58,.35)}
 
-  .groups-list {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .group-card {
-    background: #fff;
-    border-radius: 18px;
-    border: 1px solid #e5e5e7;
-    padding: 28px 32px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    transition: all 0.25s ease;
-  }
-
-  .group-card:hover {
-    transform: scale(1.01);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  }
-
-  .group-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 16px;
-  }
-
-  .group-name {
-    font-size: 22px;
-    font-weight: 600;
-    color: #111;
-  }
-
-  .group-meta {
-    font-size: 13px;
-    color: #86868b;
-    margin-top: 3px;
-  }
-
-  .group-actions {
-    display: flex;
-    gap: 10px;
-  }
-
-  .open-btn, .delete-btn {
-    border: none;
-    padding: 9px 16px;
-    border-radius: 8px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .open-btn {
-    background: var(--blue);
-    color: #fff;
-  }
-
-  .open-btn:hover { background: #005bb5; }
-
-  .delete-btn {
-    background: #ff3b30;
-    color: #fff;
-  }
-
-  .delete-btn:hover { background: #d9362b; }
-
-  .tab-list {
-    margin-top: 12px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .tab-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--blue);
-    font-size: 15px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    padding: 6px 0;
-    border-radius: 6px;
-  }
-
-  .tab-item:hover {
-    background: rgba(0, 113, 227, 0.07);
-    padding-left: 4px;
-  }
-
-  .tab-item img {
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
-  }
-
-  .status-message {
-    position: fixed;
-    top: 80px;
-    right: 24px;
-    background: var(--blue);
-    color: #fff;
-    padding: 12px 20px;
-    border-radius: 10px;
-    font-size: 15px;
-    opacity: 0;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-  }
-
-  .status-message.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-</style>
+    /* ===== Utility ===== */
+    .sr{position:absolute; left:-9999px}
+    .muted{color:var(--muted)}
+    .spacer{height:8px}
+    @media (max-width:900px){
+      .stat{grid-column:span 6}
+    }
+    @media (max-width:640px){
+      .stat{grid-column:span 12}
+      .actions{justify-content:flex-start}
+    }
+  </style>
 </head>
 <body>
-  <div class="header">
+  <!-- Header -->
+  <header class="header">
     <div class="header-content">
-      <div class="logo">TabSync</div>
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true"></div>
+        <div class="logo">TabSync</div>
+      </div>
       <div class="user-section">
         <div id="userInfo" class="user-info"></div>
-        <button id="logoutBtn" class="logout-btn">Sign out</button>
+        <button id="logoutBtn" class="btn btn-ghost">Sign out</button>
       </div>
     </div>
-  </div>
+  </header>
 
-  <div class="container">
-    <div id="loginSection" class="login-section">
+  <!-- Shell -->
+  <main class="shell">
+    <!-- Login -->
+    <section id="loginSection" class="login" style="display:none">
       <div class="login-card">
-        <h1>Welcome to TabSync</h1>
-        <p style="margin:16px 0;color:#5f6368">Access your saved tab groups from any device</p>
-        <button id="googleLoginBtn" class="google-login-btn">Sign in with Google</button>
+        <h1>Welcome back</h1>
+        <p>Access your saved tab groups anywhere. Sign in to sync.</p>
+        <button id="googleLoginBtn" class="btn btn-google">Sign in with Google</button>
       </div>
-    </div>
+    </section>
 
-    <div id="mainContent" class="main-content">
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div id="totalGroups" class="stat-value">0</div>
-          <div class="stat-label">Saved Groups</div>
+    <!-- Dashboard -->
+    <section id="mainContent" style="display:none">
+      <!-- Stats -->
+      <div class="stats" aria-live="polite">
+        <div class="stat">
+          <div>
+            <div id="totalGroups" class="stat-num">0</div>
+            <div class="stat-label">Saved Groups</div>
+          </div>
+          <div class="stat-chip">Synced</div>
         </div>
-        <div class="stat-card">
-          <div id="totalTabs" class="stat-value">0</div>
-          <div class="stat-label">Total Tabs</div>
+        <div class="stat">
+          <div>
+            <div id="totalTabs" class="stat-num">0</div>
+            <div class="stat-label">Total Tabs</div>
+          </div>
+          <div class="stat-chip">Up to date</div>
+        </div>
+        <div class="stat">
+          <div>
+            <div class="stat-num" id="lastUpdated">—</div>
+            <div class="stat-label">Last Refresh</div>
+          </div>
+          <button id="refreshBtn" class="btn btn-blue">Refresh</button>
         </div>
       </div>
 
-      <div class="groups-header">
-        <h2 class="groups-title">Your Tab Groups</h2>
-        <button id="refreshBtn" class="refresh-btn">Refresh</button>
+      <!-- Toolbar -->
+      <div class="toolbar">
+        <div class="search">
+          <svg width="16" height="16" fill="currentColor" style="opacity:.6"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM6.5 11a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
+          <input id="searchInput" type="search" placeholder="Search groups or URLs…" autocomplete="off">
+        </div>
+        <select id="sortSelect" class="select" title="Sort">
+          <option value="new">Newest</option>
+          <option value="old">Oldest</option>
+          <option value="az">A → Z</option>
+          <option value="za">Z → A</option>
+          <option value="tabs">Tabs (High → Low)</option>
+        </select>
+        <button id="copyAllBtn" class="btn btn-ghost">Copy All Links</button>
       </div>
 
-      <div id="loading" class="loading">Loading your tab groups...</div>
-
-      <div id="emptyState" class="empty-state" style="display:none">
-        <div class="empty-icon">📁</div>
-        <h3>No tab groups yet</h3>
-        <p>Install the Chrome extension to start saving tab groups</p>
+      <!-- Loading -->
+      <div id="loading" class="loading-row" style="display:none">
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
+        <div class="skeleton"></div>
       </div>
 
-      <div id="groupsList" class="groups-list"></div>
-    </div>
-  </div>
+      <!-- Empty -->
+      <div id="emptyState" class="empty" style="display:none">
+        <div style="font-size:34px;margin-bottom:8px;opacity:.9">No tab groups yet</div>
+        <div class="muted">Save a group from the extension to see it here.</div>
+      </div>
 
-  <div id="statusMessage" class="status-message"></div>
+      <!-- Groups -->
+      <div id="groupsList" class="groups" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <!-- Toast -->
+  <div id="statusMessage" class="toast" role="status" aria-live="polite"></div>
 
   <script>
     // ===== Config =====
@@ -283,18 +336,26 @@
     // ===== State / DOM =====
     let currentUser = null;
     let groups = [];
+    let filteredGroups = [];
+
     const loginSection = document.getElementById('loginSection');
     const mainContent = document.getElementById('mainContent');
     const userInfo = document.getElementById('userInfo');
     const logoutBtn = document.getElementById('logoutBtn');
     const googleLoginBtn = document.getElementById('googleLoginBtn');
+
     const refreshBtn = document.getElementById('refreshBtn');
     const loading = document.getElementById('loading');
     const emptyState = document.getElementById('emptyState');
     const groupsList = document.getElementById('groupsList');
     const totalGroups = document.getElementById('totalGroups');
     const totalTabs = document.getElementById('totalTabs');
+    const lastUpdated = document.getElementById('lastUpdated');
     const statusMessage = document.getElementById('statusMessage');
+
+    const searchInput = document.getElementById('searchInput');
+    const sortSelect = document.getElementById('sortSelect');
+    const copyAllBtn = document.getElementById('copyAllBtn');
 
     document.addEventListener('DOMContentLoaded', async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -308,19 +369,21 @@
       }
     });
 
-    googleLoginBtn.addEventListener('click', handleGoogleLogin);
+    googleLoginBtn?.addEventListener('click', handleGoogleLogin);
     logoutBtn.addEventListener('click', handleLogout);
     refreshBtn.addEventListener('click', loadGroups);
+    searchInput.addEventListener('input', () => { applyFilters(); renderGroups(); });
+    sortSelect.addEventListener('change', () => { applyFilters(); renderGroups(); });
+    copyAllBtn.addEventListener('click', copyAllLinks);
 
     // ===== Auth (Dashboard) =====
     async function handleGoogleLogin() {
       try {
         googleLoginBtn.disabled = true;
-        googleLoginBtn.textContent = 'Signing in...';
+        googleLoginBtn.textContent = 'Signing in…';
 
-        // Use the SAME web client as your server env
         const clientId = '754594078949-26dhhpri61i96967opn4pinbmjc208hp.apps.googleusercontent.com';
-        const redirectUri = window.location.origin + window.location.pathname; // exact page URL
+        const redirectUri = window.location.origin + window.location.pathname;
         const scope = 'openid email profile';
 
         const authUrl =
@@ -335,46 +398,46 @@
         window.location.href = authUrl;
       } catch (err) {
         console.error('Login failed:', err);
-        showStatus('Sign in failed. Please try again.', 'error');
+        showStatus('Sign in failed. Try again.', 'error');
         googleLoginBtn.disabled = false;
         googleLoginBtn.textContent = 'Sign in with Google';
       }
     }
 
     async function handleAuthCallback(code) {
-  try {
-    const resp = await fetch(`${API_BASE}/auth/google/callback`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        code,
-        redirect_uri: window.location.origin + window.location.pathname
-      })
-    });
+      try {
+        const resp = await fetch(`${API_BASE}/auth/google/callback`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            code,
+            redirect_uri: window.location.origin + window.location.pathname
+          })
+        });
 
-    if (!resp.ok) {
-      const detail = await resp.text(); // <-- show server’s reason
-      console.error('OAuth exchange failed:', detail);
-      showStatus('Authentication failed: ' + detail, 'error');
-      showLogin();
-      return;
+        if (!resp.ok) {
+          const detail = await resp.text();
+          console.error('OAuth exchange failed:', detail);
+          showStatus('Authentication failed: ' + detail, 'error');
+          showLogin();
+          return;
+        }
+
+        const data = await resp.json();
+        storeUser(data.user);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        await showDashboard(data.user);
+        showStatus('Signed in successfully!');
+      } catch (err) {
+        console.error('Auth callback error:', err);
+        showStatus('Authentication failed. Please try again.', 'error');
+        showLogin();
+      }
     }
-
-    const data = await resp.json();
-    storeUser(data.user);
-    window.history.replaceState({}, document.title, window.location.pathname);
-    await showDashboard(data.user);
-    showStatus('Signed in successfully!');
-  } catch (err) {
-    console.error('Auth callback error:', err);
-    showStatus('Authentication failed. Please try again.', 'error');
-    showLogin();
-  }
-}
 
     // ===== UI helpers =====
     function showLogin() {
-      loginSection.style.display = 'block';
+      loginSection.style.display = 'grid';
       mainContent.style.display = 'none';
       document.querySelector('.user-section').style.display = 'none';
     }
@@ -390,8 +453,8 @@
 
     function showStatus(message, type='success') {
       statusMessage.textContent = message;
-      statusMessage.className = `status-message ${type} show`;
-      setTimeout(() => { statusMessage.className = 'status-message'; }, 3000);
+      statusMessage.className = `toast ${type === 'error' ? 'error' : ''} show`;
+      setTimeout(() => { statusMessage.className = 'toast'; }, 3000);
     }
 
     function getStoredUser() {
@@ -401,10 +464,15 @@
     function storeUser(user) { localStorage.setItem('tabsync_user', JSON.stringify(user)); }
     function clearStoredUser() { localStorage.removeItem('tabsync_user'); }
 
+    async function handleLogout(){
+      clearStoredUser();
+      location.reload();
+    }
+
     // ===== Data =====
     async function loadGroups() {
       try {
-        loading.style.display = 'block';
+        loading.style.display = 'grid';
         emptyState.style.display = 'none';
         groupsList.innerHTML = '';
 
@@ -414,13 +482,15 @@
         if (!res.ok) throw new Error('Failed to load groups');
 
         const data = await res.json();
-        groups = data.groups;
-        loading.style.display = 'none';
+        groups = Array.isArray(data.groups) ? data.groups : [];
+        applyFilters();
+        renderGroups();
 
-        if (groups.length === 0) emptyState.style.display = 'block';
-        else renderGroups();
+        loading.style.display = 'none';
+        emptyState.style.display = filteredGroups.length ? 'none' : 'block';
 
         updateStats();
+        lastUpdated.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       } catch (err) {
         console.error('Failed to load groups:', err);
         loading.style.display = 'none';
@@ -428,70 +498,88 @@
       }
     }
 
+    function applyFilters(){
+      const q = (searchInput.value || '').trim().toLowerCase();
+      const sort = sortSelect.value;
+
+      filteredGroups = groups
+        .filter(g => {
+          if(!q) return true;
+          const inName = (g.name || '').toLowerCase().includes(q);
+          const inUrls = (g.urls || []).some(u => (u || '').toLowerCase().includes(q));
+          return inName || inUrls;
+        })
+        .sort((a,b)=>{
+          if(sort === 'new') return new Date(b.createdAt) - new Date(a.createdAt);
+          if(sort === 'old') return new Date(a.createdAt) - new Date(b.createdAt);
+          if(sort === 'az') return (a.name||'').localeCompare(b.name||'');
+          if(sort === 'za') return (b.name||'').localeCompare(a.name||'');
+          if(sort === 'tabs') return (b.tabCount||b.urls?.length||0) - (a.tabCount||a.urls?.length||0);
+          return 0;
+        });
+    }
+
     function renderGroups() {
-      groupsList.innerHTML = groups.map(group => `
-        <div class="group-card">
-          <div class="group-header">
+      groupsList.innerHTML = filteredGroups.map((group, idx) => `
+        <article class="card" style="animation-delay:${idx*40}ms">
+          <header class="card-head">
             <div>
-              <div class="group-name">${escapeHtml(group.name)}</div>
-              <div class="group-meta">
-                ${group.tabCount} tabs • ${formatDate(group.createdAt)}
-              </div>
+              <div class="title">${escapeHtml(group.name || 'Untitled Group')}</div>
+              <div class="meta">${(group.tabCount ?? group.urls?.length ?? 0)} tabs • ${formatDate(group.createdAt)}</div>
             </div>
-            <div class="group-actions">
-              <button class="open-btn" onclick="openGroup('${group.id}')">Open All</button>
-              <button class="delete-btn" onclick="deleteGroup('${group.id}')">Delete</button>
+            <div class="actions">
+              <button class="pill blue" onclick="openGroup('${group.id}')">Open All</button>
+              <button class="pill" onclick="copyGroupLinks('${group.id}')">Copy</button>
+              <button class="pill" onclick="exportGroup('${group.id}')">Export</button>
+              <button class="pill red" onclick="deleteGroup('${group.id}')">Delete</button>
             </div>
-          </div>
-          <div class="tab-preview">
-            <div class="tab-list">
-              ${group.urls.map(url => `
-                <div class="tab-item">
-                  <img src="https://www.google.com/s2/favicons?sz=64&domain_url=${url}" alt="">
-                  <a href="${url}" target="_blank">${escapeHtml(url)}</a>
+          </header>
+          <div class="card-body">
+            <div class="tabs">
+              ${(group.urls || []).map(u => `
+                <div class="tab">
+                  <img class="fav" src="https://www.google.com/s2/favicons?sz=64&domain_url=${u}" alt="">
+                  <a class="link" href="${u}" target="_blank" rel="noopener noreferrer">${escapeHtml(u)}</a>
                 </div>
               `).join('')}
             </div>
           </div>
-        </div>
+        </article>
       `).join('');
     }
 
     function updateStats() {
       totalGroups.textContent = groups.length;
-      totalTabs.textContent = groups.reduce((sum, g) => sum + g.tabCount, 0);
+      totalTabs.textContent = groups.reduce((sum, g) => sum + (g.tabCount ?? g.urls?.length ?? 0), 0);
     }
 
-function openGroup(groupId) {
-  const group = groups.find(g => g.id === groupId);
-  if (!group) return;
+    // ===== Actions =====
 
-  if (group.urls.length === 0) {
-    showStatus('No URLs found in this group.', 'error');
-    return;
-  }
+    // Robust multi-tab open for web (dashboard). Extension version can use chrome.windows.create.
+    function openGroup(groupId) {
+      const group = groups.find(g => g.id === groupId);
+      if (!group || !Array.isArray(group.urls) || group.urls.length === 0) {
+        showStatus('No URLs found in this group.', 'error'); return;
+      }
+      if (group.urls.length > 10 && !confirm(`Open ${group.urls.length} tabs in a new window?`)) return;
 
-  // Confirm if large group
-  if (group.urls.length > 10 && !confirm(`Open ${group.urls.length} tabs in a new window?`)) return;
+      // Open a blank window and bootstrap tab opens from inside it
+      const newWindow = window.open('about:blank', '_blank', 'noopener,noreferrer,width=1200,height=800');
+      if (!newWindow) { showStatus('Popup blocked. Enable popups for this site.', 'error'); return; }
 
-  // Open first tab to create the new window
-  const firstUrl = group.urls[0];
-  const newWindow = window.open(firstUrl, '_blank', 'noopener,noreferrer');
-
-  if (!newWindow) {
-    showStatus('Popup blocked. Please allow popups for this site.', 'error');
-    return;
-  }
-
-  // Open the remaining tabs in that same new window
-  setTimeout(() => {
-    group.urls.slice(1).forEach(url => {
-      newWindow.open(url, '_blank');
-    });
-  }, 500); // short delay to let first tab load
-
-  showStatus(`Opened ${group.urls.length} tabs from "${group.name}" in a new window.`);
-}
+      const payload = JSON.stringify(group.urls);
+      const safeName = escapeHtml(group.name || 'Group');
+      const script = `
+        const urls = ${payload};
+        urls.forEach((u, i) => setTimeout(()=>window.open(u, '_blank'), i*160));
+        document.body.style.fontFamily='-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,system-ui,sans-serif';
+        document.body.style.background='#0b0b0c'; document.body.style.color='#f5f5f7';
+        document.body.style.display='grid'; document.body.style.placeItems='center'; document.body.style.height='100vh';
+        document.body.innerHTML = '<div style="opacity:.9;text-align:center"><div style="font-size:22px;font-weight:800;margin-bottom:6px">Opening ${group.urls.length} tabs</div><div style="color:#a1a1a6">from “${safeName}”. You can close this window.</div></div>';
+      `;
+      newWindow.document.write(`<script>${script}<\/script>`);
+      showStatus(`Opening ${group.urls.length} tabs from "${group.name}"…`);
+    }
 
     async function deleteGroup(groupId) {
       const group = groups.find(g => g.id === groupId);
@@ -505,17 +593,46 @@ function openGroup(groupId) {
       if (!res.ok) { showStatus('Failed to delete group.', 'error'); return; }
 
       groups = groups.filter(g => g.id !== groupId);
-      if (groups.length === 0) { emptyState.style.display = 'block'; groupsList.innerHTML = ''; }
-      else renderGroups();
-
+      applyFilters(); renderGroups();
+      emptyState.style.display = groups.length ? 'none' : 'block';
       updateStats();
       showStatus(`Deleted "${group.name}"`);
     }
 
+    function copyGroupLinks(groupId){
+      const group = groups.find(g => g.id === groupId);
+      if(!group) return;
+      const text = (group.urls || []).join('\n');
+      navigator.clipboard.writeText(text).then(
+        ()=>showStatus(`Copied ${group.urls.length} links to clipboard`),
+        ()=>showStatus('Copy failed', 'error')
+      );
+    }
+
+    function copyAllLinks(){
+      const all = groups.flatMap(g => g.urls || []);
+      if(!all.length){ showStatus('No links to copy', 'error'); return; }
+      navigator.clipboard.writeText(all.join('\n')).then(
+        ()=>showStatus(`Copied ${all.length} links`),
+        ()=>showStatus('Copy failed', 'error')
+      );
+    }
+
+    function exportGroup(groupId){
+      const group = groups.find(g => g.id === groupId);
+      if(!group) return;
+      const blob = new Blob([JSON.stringify(group, null, 2)], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${(group.name||'tabsync-group').replace(/[^\w\-]+/g,'_')}.json`;
+      document.body.appendChild(a); a.click(); a.remove();
+      showStatus('Export started');
+    }
+
     // ===== Utils =====
-    function escapeHtml(text){const d=document.createElement('div');d.textContent=text;return d.innerHTML;}
-    function formatDate(s){const d=new Date(s);return d.toLocaleDateString()+' '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});}
-    function getDomainFromUrl(u){try{return new URL(u).hostname;}catch{return u;}}
+    function escapeHtml(text){const d=document.createElement('div');d.textContent=String(text ?? '');return d.innerHTML;}
+    function formatDate(s){ if(!s) return '—'; const d=new Date(s); return d.toLocaleDateString()+' • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
+
   </script>
 </body>
 </html>
