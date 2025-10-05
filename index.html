@@ -5,58 +5,248 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TabSync Dashboard</title>
   <style>
-    *{margin:0;padding:0;box-sizing:border-box}
-    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f8f9fa;color:#202124;line-height:1.6}
-    .header{background:#fff;border-bottom:1px solid #e8eaed;padding:16px 24px;position:sticky;top:0;z-index:100}
-    .header-content{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-    .logo{font-size:24px;font-weight:700;color:#1a73e8}
-    .user-section{display:flex;align-items:center;gap:16px}
-    .user-info{font-size:14px;color:#5f6368}
-    .logout-btn{background:none;border:1px solid #dadce0;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px;color:#5f6368}
-    .logout-btn:hover{background:#f1f3f4}
-    .container{max-width:1200px;margin:0 auto;padding:24px}
-    .login-section{text-align:center;padding:80px 24px}
-    .login-card{background:#fff;border-radius:12px;padding:48px;box-shadow:0 2px 10px rgba(0,0,0,.1);max-width:400px;margin:0 auto}
-    .google-login-btn{background:#4285f4;color:#fff;border:none;padding:12px 24px;border-radius:6px;cursor:pointer;font-size:16px;width:100%;margin-top:24px}
-    .google-login-btn:hover{background:#3367d6}
-    .main-content{display:none}
-    .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:32px}
-    .stat-card{background:#fff;padding:24px;border-radius:8px;border:1px solid #e8eaed}
-    .stat-value{font-size:32px;font-weight:700;color:#1a73e8;margin-bottom:4px}
-    .stat-label{font-size:14px;color:#5f6368}
-    .groups-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
-    .groups-title{font-size:20px;font-weight:600}
-    .refresh-btn{background:#1a73e8;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:14px}
-    .refresh-btn:hover{background:#1557b0}
-    .groups-list{display:grid;gap:16px}
-    .group-card{background:#fff;border:1px solid #e8eaed;border-radius:8px;padding:20px;transition:box-shadow .2s}
-    .group-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.1)}
-    .group-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
-    .group-name{font-size:18px;font-weight:600;margin-bottom:4px}
-    .group-meta{font-size:12px;color:#5f6368}
-    .group-actions{display:flex;gap:8px}
-    .open-btn{background:#1a73e8;color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px}
-    .open-btn:hover{background:#1557b0}
-    .delete-btn{background:#ea4335;color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:12px}
-    .delete-btn:hover{background:#d33b2c}
-    .tab-preview{margin-top:12px}
-    .tab-list{max-height:120px;overflow-y:auto;font-size:13px;color:#5f6368;line-height:1.4}
-    .tab-item{padding:2px 0;word-break:break-all}
-    .empty-state{text-align:center;padding:60px 24px;color:#5f6368}
-    .empty-icon{font-size:48px;margin-bottom:16px;opacity:.5}
-    .loading{text-align:center;padding:40px;color:#5f6368}
-    .status-message{position:fixed;top:80px;right:24px;padding:12px 16px;border-radius:6px;font-size:14px;z-index:1000;opacity:0;transform:translateY(-10px);transition:all .3s}
-    .status-message.show{opacity:1;transform:translateY(0)}
-    .status-message.success{background:#e8f5e8;color:#137333;border:1px solid #c3e6c3}
-    .status-message.error{background:#fce8e6;color:#d93025;border:1px solid #f5c6cb}
-    @media (max-width:768px){
-      .container{padding:16px}
-      .header-content{padding:0 16px}
-      .group-header{flex-direction:column;align-items:flex-start;gap:8px}
-      .group-actions{align-self:stretch}
-      .open-btn,.delete-btn{flex:1}
-    }
-  </style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+    background: #f5f6f8;
+    color: #1c1c1e;
+    line-height: 1.6;
+  }
+
+  .header {
+    background: #fff;
+    border-bottom: 1px solid #e5e5e7;
+    padding: 18px 40px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .header-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .logo {
+    font-size: 26px;
+    font-weight: 700;
+    color: #0071e3;
+    letter-spacing: -0.5px;
+  }
+
+  .user-section {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .user-info {
+    font-size: 15px;
+    color: #555;
+  }
+
+  .logout-btn {
+    background: #f2f2f7;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.2s ease;
+  }
+
+  .logout-btn:hover {
+    background: #e5e5ea;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 40px;
+    text-align: left;
+  }
+
+  .stats-grid {
+    display: flex;
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    flex: 1;
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px;
+    border: 1px solid #e5e5e7;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+
+  .stat-value {
+    font-size: 42px;
+    font-weight: 700;
+    color: #0071e3;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-size: 16px;
+    color: #777;
+    font-weight: 500;
+  }
+
+  .groups-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .groups-title {
+    font-size: 24px;
+    font-weight: 600;
+    color: #111;
+  }
+
+  .refresh-btn {
+    background: #0071e3;
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.2s;
+  }
+
+  .refresh-btn:hover {
+    background: #005bb5;
+  }
+
+  .groups-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .group-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e5e5e7;
+    padding: 24px 28px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.25s ease;
+  }
+
+  .group-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+  }
+
+  .group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .group-name {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111;
+  }
+
+  .group-meta {
+    font-size: 13px;
+    color: #777;
+  }
+
+  .group-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .open-btn,
+  .delete-btn {
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+
+  .open-btn {
+    background: #0071e3;
+    color: white;
+  }
+
+  .open-btn:hover {
+    background: #005bb5;
+  }
+
+  .delete-btn {
+    background: #ff3b30;
+    color: white;
+  }
+
+  .delete-btn:hover {
+    background: #d9362b;
+  }
+
+  .tab-list {
+    font-size: 14px;
+    margin-top: 12px;
+  }
+
+  .tab-item {
+    padding: 5px 0;
+    color: #0071e3;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    word-break: break-all;
+  }
+
+  .tab-item img {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+  }
+
+  .status-message {
+    position: fixed;
+    top: 80px;
+    right: 24px;
+    background: #0071e3;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+  }
+
+  .status-message.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
 </head>
 <body>
   <div class="header">
