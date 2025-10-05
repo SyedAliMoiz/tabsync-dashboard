@@ -5,74 +5,75 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TabSync Dashboard</title>
   <style>
+  :root {
+    --blue: #0071e3;
+    --light-gray: #f5f5f7;
+    --dark-bg: #1c1c1e;
+    --dark-card: #2c2c2e;
+    --dark-text: #f5f5f7;
+  }
+
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-    background: #f5f6f8;
-    color: #1c1c1e;
+    background: var(--light-gray);
+    color: #1d1d1f;
     line-height: 1.6;
+    transition: background 0.3s, color 0.3s;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background: var(--dark-bg);
+      color: var(--dark-text);
+    }
+
+    .group-card, .stat-card {
+      background: var(--dark-card);
+      border-color: #3a3a3c;
+    }
+
+    .open-btn { background: var(--blue); }
+    .delete-btn { background: #ff453a; }
   }
 
   .header {
     background: #fff;
     border-bottom: 1px solid #e5e5e7;
-    padding: 18px 40px;
+    padding: 20px 40px;
     position: sticky;
     top: 0;
     z-index: 10;
   }
 
+  @media (prefers-color-scheme: dark) {
+    .header { background: var(--dark-card); border-color: #3a3a3c; }
+  }
+
   .header-content {
-    max-width: 1100px;
-    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    max-width: 1100px;
+    margin: 0 auto;
   }
 
   .logo {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 700;
-    color: #0071e3;
-    letter-spacing: -0.5px;
-  }
-
-  .user-section {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-
-  .user-info {
-    font-size: 15px;
-    color: #555;
-  }
-
-  .logout-btn {
-    background: #f2f2f7;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    color: #333;
-    transition: all 0.2s ease;
-  }
-
-  .logout-btn:hover {
-    background: #e5e5ea;
+    color: var(--blue);
+    letter-spacing: -0.3px;
   }
 
   .container {
     max-width: 1100px;
     margin: 0 auto;
-    padding: 32px 40px;
-    text-align: left;
+    padding: 40px;
   }
 
   .stats-grid {
@@ -85,94 +86,65 @@
     flex: 1;
     background: #fff;
     border-radius: 14px;
-    padding: 28px;
     border: 1px solid #e5e5e7;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    padding: 28px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
   }
 
   .stat-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   }
 
   .stat-value {
-    font-size: 42px;
+    font-size: 48px;
     font-weight: 700;
-    color: #0071e3;
-    margin-bottom: 6px;
+    color: var(--blue);
   }
 
   .stat-label {
     font-size: 16px;
-    color: #777;
-    font-weight: 500;
-  }
-
-  .groups-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-
-  .groups-title {
-    font-size: 24px;
-    font-weight: 600;
-    color: #111;
-  }
-
-  .refresh-btn {
-    background: #0071e3;
-    color: #fff;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 15px;
-    transition: background 0.2s;
-  }
-
-  .refresh-btn:hover {
-    background: #005bb5;
+    color: #555;
   }
 
   .groups-list {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
   }
 
   .group-card {
     background: #fff;
-    border-radius: 14px;
+    border-radius: 18px;
     border: 1px solid #e5e5e7;
-    padding: 24px 28px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    padding: 28px 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     transition: all 0.25s ease;
   }
 
   .group-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+    transform: scale(1.01);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   }
 
   .group-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
   }
 
   .group-name {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 600;
     color: #111;
   }
 
   .group-meta {
     font-size: 13px;
-    color: #777;
+    color: #86868b;
+    margin-top: 3px;
   }
 
   .group-actions {
@@ -180,63 +152,68 @@
     gap: 10px;
   }
 
-  .open-btn,
-  .delete-btn {
+  .open-btn, .delete-btn {
     border: none;
-    padding: 8px 14px;
-    border-radius: 6px;
-    cursor: pointer;
+    padding: 9px 16px;
+    border-radius: 8px;
     font-size: 14px;
-    transition: all 0.2s;
+    cursor: pointer;
+    transition: all 0.2s ease;
   }
 
   .open-btn {
-    background: #0071e3;
-    color: white;
+    background: var(--blue);
+    color: #fff;
   }
 
-  .open-btn:hover {
-    background: #005bb5;
-  }
+  .open-btn:hover { background: #005bb5; }
 
   .delete-btn {
     background: #ff3b30;
-    color: white;
+    color: #fff;
   }
 
-  .delete-btn:hover {
-    background: #d9362b;
-  }
+  .delete-btn:hover { background: #d9362b; }
 
   .tab-list {
-    font-size: 14px;
     margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .tab-item {
-    padding: 5px 0;
-    color: #0071e3;
     display: flex;
     align-items: center;
-    gap: 8px;
-    word-break: break-all;
+    gap: 10px;
+    color: var(--blue);
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    padding: 6px 0;
+    border-radius: 6px;
+  }
+
+  .tab-item:hover {
+    background: rgba(0, 113, 227, 0.07);
+    padding-left: 4px;
   }
 
   .tab-item img {
-    width: 16px;
-    height: 16px;
-    border-radius: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
   }
 
   .status-message {
     position: fixed;
     top: 80px;
     right: 24px;
-    background: #0071e3;
+    background: var(--blue);
     color: #fff;
-    padding: 10px 16px;
-    border-radius: 6px;
-    font-size: 14px;
+    padding: 12px 20px;
+    border-radius: 10px;
+    font-size: 15px;
     opacity: 0;
     transform: translateY(-10px);
     transition: all 0.3s ease;
@@ -468,13 +445,12 @@
           </div>
           <div class="tab-preview">
             <div class="tab-list">
-              ${group.urls.slice(0,8).map(url =>
-                `<div class="tab-item">
+              ${group.urls.map(url => `
+                <div class="tab-item">
                   <img src="https://www.google.com/s2/favicons?sz=64&domain_url=${url}" alt="">
                   <a href="${url}" target="_blank">${escapeHtml(url)}</a>
-                </div>`
-              ).join('')}
-              ${group.urls.length > 5 ? `<div class="tab-item">...and ${group.urls.length - 5} more</div>` : ''}
+                </div>
+              `).join('')}
             </div>
           </div>
         </div>
