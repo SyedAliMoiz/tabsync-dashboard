@@ -8,7 +8,8 @@
   <style>
     :root{
       --bg:#0b0b0c;
-      --bg-elev:#111114;
+      --bg-grad-1:rgba(10,132,255,.16);
+      --bg-grad-2:rgba(88,86,214,.12);
       --card:#17171a;
       --card-2:#1c1c20;
       --text:#f5f5f7;
@@ -17,23 +18,19 @@
       --blue:#0a84ff;
       --blue-2:#3aa0ff;
       --red:#ff453a;
-      --green:#30d158;
+
+      --radius-xl:20px;
+      --radius-lg:14px;
+
       --shadow:0 18px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.02);
-      --radius-xl:22px;
-      --radius-lg:16px;
-      --radius-md:12px;
-      --pad-xl:40px;
-      --pad-lg:28px;
-      --pad-md:18px;
-      --pad-sm:12px;
     }
 
     *{box-sizing:border-box;margin:0;padding:0}
     html,body{height:100%}
     body{
       background:
-        radial-gradient(1200px 800px at 10% -10%, rgba(10,132,255,.16), transparent 60%),
-        radial-gradient(1000px 700px at 90% -20%, rgba(88,86,214,.12), transparent 55%),
+        radial-gradient(1200px 800px at 10% -10%, var(--bg-grad-1), transparent 60%),
+        radial-gradient(1000px 700px at 90% -20%, var(--bg-grad-2), transparent 55%),
         linear-gradient(180deg, #0a0a0c 0%, #0b0b0c 100%);
       color:var(--text);
       font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Inter,system-ui,sans-serif;
@@ -43,12 +40,12 @@
       letter-spacing:.01rem;
     }
 
-    /* ===== Top Nav (glass) ===== */
+    /* ===== Top Nav (blend into gradient) ===== */
     .header{
       position:sticky; top:0; z-index:50;
-      backdrop-filter:saturate(140%) blur(18px);
-      background:rgba(17,17,20,.72);
-      border-bottom:1px solid rgba(255,255,255,.06);
+      backdrop-filter:saturate(140%) blur(16px);
+      background:linear-gradient(to bottom, rgba(17,17,20,.86), rgba(17,17,20,.58));
+      border-bottom:1px solid rgba(255,255,255,.05);
     }
     .header-content{
       max-width:1400px;
@@ -56,17 +53,12 @@
       padding:14px clamp(20px, 5vw, 48px);
       display:flex; align-items:center; justify-content:space-between;
     }
-    .brand{
-      display:flex; align-items:center; gap:12px;
-    }
-    .brand-logo{
-      width:26px;height:26px;border-radius:8px;
-      background:radial-gradient(120% 120% at 30% 20%, #3aa0ff 0%, #0a84ff 40%, #0048b3 100%);
-      box-shadow:0 10px 30px rgba(10,132,255,.45), inset 0 1px 0 rgba(255,255,255,.25);
-    }
-    .logo{font-weight:800; font-size:20px; letter-spacing:.2px}
+    .brand{display:flex; align-items:center; gap:12px}
+    .brand-logo{width:24px;height:24px;border-radius:8px;background:radial-gradient(120% 120% at 30% 20%, #3aa0ff 0%, #0a84ff 40%, #0048b3 100%);box-shadow:0 10px 30px rgba(10,132,255,.45), inset 0 1px 0 rgba(255,255,255,.25)}
+    .logo{font-weight:800; font-size:19px; letter-spacing:.2px}
     .user-section{display:flex; align-items:center; gap:10px}
     .user-info{color:var(--muted); font-size:14px}
+
     .btn{
       appearance:none;border:0;cursor:pointer;border-radius:10px;
       padding:8px 14px;font-weight:600;font-size:14px;
@@ -76,95 +68,103 @@
     .btn:hover{transform:translateY(-1px)}
     .btn:active{transform:translateY(0)}
     .btn-ghost{background:rgba(255,255,255,.06); color:var(--text); box-shadow:var(--shadow)}
-    .btn-ghost:hover{background:rgba(255,255,255,.09)}
     .btn-blue{background:linear-gradient(180deg, var(--blue) 0%, #056ee6 100%); color:#fff; box-shadow:0 10px 30px rgba(10,132,255,.35)}
-    .btn-blue:hover{background:linear-gradient(180deg, #2b95ff 0%, var(--blue) 100%)}
     .btn-red{background:linear-gradient(180deg, #ff5a52 0%, var(--red) 100%); color:#fff; box-shadow:0 10px 28px rgba(255,69,58,.35)}
-    .btn-red:hover{background:linear-gradient(180deg, #ff786f 0%, #ff3b30 100%)}
 
-    /* ===== Page Shell ===== */
+    /* ===== Shell (left-aligned) ===== */
     .shell{
       max-width:1400px;
       margin:0 auto;
-      padding:32px 0 80px;
-      /* Left aligned feel: big left inset, fluid right */
+      padding:30px 0 70px;
       padding-left:clamp(24px, 6vw, 64px);
       padding-right:clamp(16px, 3vw, 40px);
     }
 
-    /* ===== Hero Stats Row ===== */
+    /* ===== Stats (smaller by ~50%) ===== */
     .stats{
-      display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:22px;
-      margin:24px 0 30px;
+      display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:16px;
+      margin:16px 0 18px;
     }
     .stat{
-      grid-column:span 4;
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      grid-column:span 3;                    /* narrower width */
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
       border:1px solid var(--line);
       border-radius:var(--radius-xl);
-      padding:26px 28px;
+      padding:14px 16px;                      /* smaller height */
+      min-height:96px;                        /* about half height */
       box-shadow:var(--shadow);
       display:flex; align-items:flex-end; justify-content:space-between;
-      overflow:hidden; position:relative;
-      isolation:isolate;
+      overflow:hidden; position:relative; isolation:isolate;
     }
-    .stat::after{
-      content:""; position:absolute; inset:-1px; pointer-events:none; border-radius:inherit;
-      background: radial-gradient(500px 120px at 20% 0%, rgba(10,132,255,.12), transparent 60%);
-      z-index:-1;
-    }
-    .stat-num{font-size: clamp(36px, 5vw, 64px); font-weight:800; letter-spacing:-.02em}
-    .stat-label{color:var(--muted); font-size:14px; margin-top:6px}
-    .stat-chip{font-size:12px; color:#8df0b3; background:rgba(48,209,88,.12); border:1px solid rgba(48,209,88,.25); padding:6px 10px; border-radius:999px}
+    .stat-num{font-size: clamp(28px, 3.6vw, 40px); font-weight:800; letter-spacing:-.02em; line-height:1}
+    .stat-label{color:var(--muted); font-size:13px; margin-top:6px}
+    .stat-chip{font-size:11px; color:#8df0b3; background:rgba(48,209,88,.12); border:1px solid rgba(48,209,88,.25); padding:5px 9px; border-radius:999px}
 
-    /* ===== Toolbar ===== */
+    /* ===== Toolbar (shorter search, spaced controls) ===== */
     .toolbar{
-      margin:20px 0 14px;
-      display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+      margin:8px 0 6px;
+      display:grid;
+      grid-template-columns:minmax(260px, 560px) 190px auto; /* #6 shorter search */
+      gap:14px; align-items:center;
     }
     .search{
-      flex:1; min-width:260px;
       background:rgba(255,255,255,.06); border:1px solid var(--line);
       border-radius:12px; display:flex; align-items:center; gap:10px; padding:10px 12px;
     }
-    .search input{
-      background:transparent; border:0; outline:0; color:var(--text); width:100%; font-size:15px;
-    }
+    .search input{background:transparent; border:0; outline:0; color:var(--text); width:100%; font-size:15px}
     .select{
-      background:rgba(255,255,255,.06); border:1px solid var(--line);
-      border-radius:12px; color:var(--text); padding:10px 12px; font-size:14px;
+      position:relative;
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      color:var(--text);
+      padding:10px 36px 10px 12px;
+      border-radius:12px;
+      font-size:14px;
+      appearance:none;
+      background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white" opacity="0.8"><path d="M7 10l5 5 5-5z"/></svg>');
+      background-repeat:no-repeat;
+      background-position:right 10px center; /* #6 spacing from Copy button */
+      background-size:16px;
     }
+    .select option{background:#121214; color:var(--text);} /* #2 readable options */
+
+    .btn-row{justify-self:end; display:flex; gap:12px}
 
     /* ===== Groups ===== */
-    .groups{display:flex; flex-direction:column; gap:22px; margin-top:10px;}
+    .groups{display:flex; flex-direction:column; gap:18px; margin-top:6px;}
     .card{
       border-radius:var(--radius-xl);
       border:1px solid var(--line);
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04)),
-        radial-gradient(1000px 120px at 10% -10%, rgba(10,132,255,.09), transparent 60%),
-        var(--card);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04)), var(--card);
       box-shadow:var(--shadow);
       overflow:hidden;
-      opacity:0; transform:translateY(10px) scale(.995);
+      opacity:0; transform:translateY(8px) scale(.997);
       animation:rise .45s cubic-bezier(.19,.8,.22,1) forwards;
     }
     @keyframes rise{to{opacity:1; transform:translateY(0) scale(1)}}
 
     .card-head{
       display:flex; align-items:flex-start; justify-content:space-between; gap:14px;
-      padding:24px 26px 12px 26px;
+      padding:18px 20px 10px 20px;
       border-bottom:1px solid rgba(255,255,255,.05);
     }
-    .title{font-weight:700; font-size:20px; letter-spacing:.1px}
-    .meta{color:var(--muted); font-size:13px; margin-top:4px}
+    .title{font-weight:800; font-size:20px; letter-spacing:.1px}
+    .meta-row{
+      display:flex; align-items:center; gap:10px; margin-top:8px; flex-wrap:wrap;
+    }
+    .dot{width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,.28)}
+    .chip{
+      padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:.2px;
+      border:1px solid rgba(255,255,255,.10); color:#e9ecf3; background:rgba(255,255,255,.06);
+    }
+    .chip.neutral{border-color:rgba(10,132,255,.28); background:rgba(10,132,255,.14); color:#d8ebff}
 
     .actions{display:flex; gap:10px; flex-wrap:wrap}
-    .pill{padding:9px 14px; border-radius:999px; font-weight:600; font-size:13px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.06)}
-    .pill.blue{border-color:rgba(10,132,255,.35); background:linear-gradient(180deg, rgba(10,132,255,.22), rgba(10,132,255,.12)); color:#e6f3ff}
-    .pill.red{border-color:rgba(255,69,58,.35); background:linear-gradient(180deg, rgba(255,69,58,.22), rgba(255,69,58,.12)); color:#ffe9e7}
+    .pill{padding:8px 14px; border-radius:999px; font-weight:700; font-size:13px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.06)}
+    .pill.blue{border-color:rgba(10,132,255,.35); background:linear-gradient(180deg, rgba(10,132,255,.20), rgba(10,132,255,.10)); color:#e6f3ff}
+    .pill.red{border-color:rgba(255,69,58,.35); background:linear-gradient(180deg, rgba(255,69,58,.20), rgba(255,69,58,.10)); color:#ffe9e7}
 
-    .card-body{padding:6px 26px 22px 26px}
+    .card-body{padding:6px 20px 18px 20px}
     .tabs{display:flex; flex-direction:column; gap:8px}
     .tab{
       display:flex; align-items:center; gap:10px;
@@ -178,64 +178,34 @@
       box-shadow:0 12px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.04);
     }
     .fav{width:18px; height:18px; border-radius:4px; flex:0 0 18px}
-    .link{
-      color:var(--blue-2);
-      text-decoration:none;
-      word-break:break-all;
-      font-weight:600;
-      letter-spacing:.1px;
-    }
+    .link{color:var(--blue-2); text-decoration:none; word-break:break-all; font-weight:600; letter-spacing:.1px}
     .link:hover{text-decoration:underline; color:#6ebdff}
 
-    /* ===== Login (dark premium) ===== */
-    .login{
-      display:grid; place-items:center; min-height:70vh;
-      padding:0 clamp(24px,6vw,64px);
-    }
-    .login-card{
-      width:min(560px, 92vw);
-      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04));
-      border:1px solid var(--line); border-radius:var(--radius-xl);
-      padding:42px 36px; box-shadow:var(--shadow); text-align:center;
-    }
+    /* ===== Login / Loading / Empty / Toast ===== */
+    .login{display:grid; place-items:center; min-height:70vh; padding:0 clamp(24px,6vw,64px)}
+    .login-card{width:min(560px, 92vw); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.04)); border:1px solid var(--line); border-radius:var(--radius-xl); padding:36px 32px; box-shadow:var(--shadow); text-align:center}
     .login h1{font-size:28px; font-weight:800; margin-bottom:8px}
     .login p{color:var(--muted); margin-top:8px}
-    .btn-google{
-      margin-top:18px;
-      width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,.08);
-      background:linear-gradient(180deg, rgba(10,132,255,.22), rgba(10,132,255,.12));
-      color:#e6f3ff; font-weight:700; letter-spacing:.2px;
-      box-shadow:0 12px 28px rgba(10,132,255,.25);
-    }
+    .btn-google{margin-top:18px; width:100%; padding:12px 16px; border-radius:12px; border:1px solid rgba(255,255,255,.08); background:linear-gradient(180deg, rgba(10,132,255,.22), rgba(10,132,255,.12)); color:#e6f3ff; font-weight:800; letter-spacing:.2px; box-shadow:0 12px 28px rgba(10,132,255,.25)}
 
-    /* ===== Empty/Loading/Toast ===== */
-    .empty{color:var(--muted); padding:36px; text-align:center}
-    .loading-row{display:grid; gap:18px}
-    .skeleton{
-      height:76px; border-radius:16px; background:linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.08), rgba(255,255,255,.04));
-      animation:shimmer 1.4s infinite linear; background-size:200% 100%;
-    }
-    @keyframes shimmer{to{background-position:-200% 0}}
+    .loading-row{display:grid; gap:14px}
+    .skeleton{height:70px; border-radius:16px; background:linear-gradient(90deg, rgba(255,255,255,.04), rgba(255,255,255,.08), rgba(255,255,255,.04)); animation:shim 1.4s infinite linear; background-size:200% 100%}
+    @keyframes shim{to{background-position:-200% 0}}
 
-    .toast{
-      position:fixed; top:90px; right:26px; z-index:60;
-      background:linear-gradient(180deg, rgba(10,132,255,.9), rgba(10,132,255,.75));
-      color:#fff; padding:12px 16px; border-radius:12px; box-shadow:0 18px 40px rgba(10,132,255,.35);
-      opacity:0; transform:translateY(-8px); transition:all .28s ease;
-    }
+    .empty{color:var(--muted); padding:30px; text-align:center}
+
+    .toast{position:fixed; top:88px; right:26px; z-index:60; background:linear-gradient(180deg, rgba(10,132,255,.9), rgba(10,132,255,.75)); color:#fff; padding:12px 16px; border-radius:12px; box-shadow:0 18px 40px rgba(10,132,255,.35); opacity:0; transform:translateY(-8px); transition:all .28s ease}
     .toast.show{opacity:1; transform:translateY(0)}
     .toast.error{background:linear-gradient(180deg, rgba(255,69,58,.92), rgba(255,69,58,.78)); box-shadow:0 18px 40px rgba(255,69,58,.35)}
 
-    /* ===== Utility ===== */
-    .sr{position:absolute; left:-9999px}
-    .muted{color:var(--muted)}
-    .spacer{height:8px}
-    @media (max-width:900px){
-      .stat{grid-column:span 6}
+    @media (max-width:1024px){
+      .stat{grid-column:span 4}
+      .toolbar{grid-template-columns:1fr 180px auto}
     }
-    @media (max-width:640px){
-      .stat{grid-column:span 12}
-      .actions{justify-content:flex-start}
+    @media (max-width:680px){
+      .stat{grid-column:span 6}
+      .toolbar{grid-template-columns:1fr}
+      .btn-row{justify-self:start}
     }
   </style>
 </head>
@@ -267,7 +237,7 @@
 
     <!-- Dashboard -->
     <section id="mainContent" style="display:none">
-      <!-- Stats -->
+      <!-- Stats (only two; third “clock” removed as useless) -->
       <div class="stats" aria-live="polite">
         <div class="stat">
           <div>
@@ -283,16 +253,9 @@
           </div>
           <div class="stat-chip">Up to date</div>
         </div>
-        <div class="stat">
-          <div>
-            <div class="stat-num" id="lastUpdated">—</div>
-            <div class="stat-label">Last Refresh</div>
-          </div>
-          <button id="refreshBtn" class="btn btn-blue">Refresh</button>
-        </div>
       </div>
 
-      <!-- Toolbar -->
+      <!-- Toolbar (shorter search + spaced controls) -->
       <div class="toolbar">
         <div class="search">
           <svg width="16" height="16" fill="currentColor" style="opacity:.6"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zM6.5 11a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9z"/></svg>
@@ -305,7 +268,10 @@
           <option value="za">Z → A</option>
           <option value="tabs">Tabs (High → Low)</option>
         </select>
-        <button id="copyAllBtn" class="btn btn-ghost">Copy All Links</button>
+        <div class="btn-row">
+          <button id="refreshBtn" class="btn btn-blue">Refresh</button>
+          <button id="copyAllBtn" class="btn btn-ghost">Copy All Links</button>
+        </div>
       </div>
 
       <!-- Loading -->
@@ -317,7 +283,7 @@
 
       <!-- Empty -->
       <div id="emptyState" class="empty" style="display:none">
-        <div style="font-size:34px;margin-bottom:8px;opacity:.9">No tab groups yet</div>
+        <div style="font-size:28px;margin-bottom:6px;opacity:.9">No tab groups yet</div>
         <div class="muted">Save a group from the extension to see it here.</div>
       </div>
 
@@ -350,7 +316,6 @@
     const groupsList = document.getElementById('groupsList');
     const totalGroups = document.getElementById('totalGroups');
     const totalTabs = document.getElementById('totalTabs');
-    const lastUpdated = document.getElementById('lastUpdated');
     const statusMessage = document.getElementById('statusMessage');
 
     const searchInput = document.getElementById('searchInput');
@@ -463,11 +428,7 @@
     }
     function storeUser(user) { localStorage.setItem('tabsync_user', JSON.stringify(user)); }
     function clearStoredUser() { localStorage.removeItem('tabsync_user'); }
-
-    async function handleLogout(){
-      clearStoredUser();
-      location.reload();
-    }
+    async function handleLogout(){ clearStoredUser(); location.reload(); }
 
     // ===== Data =====
     async function loadGroups() {
@@ -490,7 +451,6 @@
         emptyState.style.display = filteredGroups.length ? 'none' : 'block';
 
         updateStats();
-        lastUpdated.textContent = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
       } catch (err) {
         console.error('Failed to load groups:', err);
         loading.style.display = 'none';
@@ -520,12 +480,22 @@
     }
 
     function renderGroups() {
-      groupsList.innerHTML = filteredGroups.map((group, idx) => `
+      groupsList.innerHTML = filteredGroups.map((group, idx) => {
+        const meta = formatDateParts(group.createdAt);
+        const tabCount = (group.tabCount ?? group.urls?.length ?? 0);
+
+        return `
         <article class="card" style="animation-delay:${idx*40}ms">
           <header class="card-head">
             <div>
               <div class="title">${escapeHtml(group.name || 'Untitled Group')}</div>
-              <div class="meta">${(group.tabCount ?? group.urls?.length ?? 0)} tabs • ${formatDate(group.createdAt)}</div>
+              <div class="meta-row">
+                <span class="chip neutral">${tabCount} tabs</span>
+                <span class="dot"></span>
+                <span class="chip">${escapeHtml(meta.date)}</span>
+                <span class="dot"></span>
+                <span class="chip">${escapeHtml(meta.time)}</span>
+              </div>
             </div>
             <div class="actions">
               <button class="pill blue" onclick="openGroup('${group.id}')">Open All</button>
@@ -544,8 +514,8 @@
               `).join('')}
             </div>
           </div>
-        </article>
-      `).join('');
+        </article>`;
+      }).join('');
     }
 
     function updateStats() {
@@ -554,8 +524,6 @@
     }
 
     // ===== Actions =====
-
-    // Robust multi-tab open for web (dashboard). Extension version can use chrome.windows.create.
     function openGroup(groupId) {
       const group = groups.find(g => g.id === groupId);
       if (!group || !Array.isArray(group.urls) || group.urls.length === 0) {
@@ -563,7 +531,6 @@
       }
       if (group.urls.length > 10 && !confirm(`Open ${group.urls.length} tabs in a new window?`)) return;
 
-      // Open a blank window and bootstrap tab opens from inside it
       const newWindow = window.open('about:blank', '_blank', 'noopener,noreferrer,width=1200,height=800');
       if (!newWindow) { showStatus('Popup blocked. Enable popups for this site.', 'error'); return; }
 
@@ -631,8 +598,14 @@
 
     // ===== Utils =====
     function escapeHtml(text){const d=document.createElement('div');d.textContent=String(text ?? '');return d.innerHTML;}
-    function formatDate(s){ if(!s) return '—'; const d=new Date(s); return d.toLocaleDateString()+' • '+d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
-
+    function formatDateParts(s){
+      if(!s) return {date:'—', time:'—'};
+      const d=new Date(s);
+      return {
+        date: d.toLocaleDateString(),
+        time: d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+      };
+    }
   </script>
 </body>
 </html>
