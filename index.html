@@ -22,48 +22,35 @@
       --shadow:0 18px 70px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.02);
     }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+    *{ box-sizing:border-box; margin:0; padding:0; }
+    html, body{ height:100%; overflow-x:hidden; }
 
-html, body {
-  height: 100%;
-  overflow-x: hidden;
-}
+    /* ===== Background (v1 look, no bottom seam) ===== */
+    body{
+      background:
+        radial-gradient(1200px 800px at 10% -10%, var(--bg-grad-1), transparent 60%),
+        radial-gradient(1000px 700px at 90% -20%, var(--bg-grad-2), transparent 55%),
+        linear-gradient(180deg, #0a0a0c 0%, #0b0b0c 100%);
+      background-repeat:no-repeat;
+      background-color:var(--bg);
+      color:var(--text, #f5f5f7);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Segoe UI",Roboto,Inter,system-ui,sans-serif;
+      line-height:1.65;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      letter-spacing:.01rem;
+      min-height:100vh;
+      position:relative;
+    }
+    body::before{
+      content:"";
+      position:fixed; inset:0; pointer-events:none; z-index:0;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.04), transparent 70%),
+        linear-gradient(180deg, rgba(255,255,255,.03) 0%, transparent 100%);
+    }
 
-body {
-  background:
-    radial-gradient(circle at 20% 0%, rgba(60, 60, 70, 0.35), transparent 60%),
-    radial-gradient(circle at 80% 0%, rgba(40, 40, 50, 0.3), transparent 60%),
-    linear-gradient(180deg, #0a0a0c 0%, #09090b 60%, #050506 100%);
-  background-attachment: fixed;
-  color: var(--text, #f5f5f7);
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Inter, system-ui, sans-serif;
-  line-height: 1.65;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  letter-spacing: 0.01rem;
-  position: relative;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.04), transparent 70%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
-  z-index: 0;
-}
-
-
-    /* ===== Top Nav (blends into gradient) ===== */
+    /* ===== Top Nav ===== */
     .header{
       position:sticky; top:0; z-index:50;
       backdrop-filter:saturate(140%) blur(16px);
@@ -93,7 +80,6 @@ body::before {
     .btn:active{transform:translateY(0)}
     .btn-ghost{background:rgba(255,255,255,.06); color:var(--text); box-shadow:var(--shadow)}
     .btn-blue{background:linear-gradient(180deg, var(--blue) 0%, #056ee6 100%); color:#fff; box-shadow:0 10px 30px rgba(10,132,255,.35)}
-    /* softer, less glowy refresh */
     .btn-blue.soft{
       background:rgba(10,132,255,.14);
       color:#d8ebff;
@@ -102,7 +88,7 @@ body::before {
     }
     .btn-red{background:linear-gradient(180deg, #ff5a52 0%, var(--red) 100%); color:#fff; box-shadow:0 10px 28px rgba(255,69,58,.35)}
 
-    /* ===== Shell (left-aligned) ===== */
+    /* ===== Shell ===== */
     .shell{
       max-width:1400px;
       margin:0 auto;
@@ -111,7 +97,7 @@ body::before {
       padding-right:clamp(16px, 3vw, 40px);
     }
 
-    /* ===== Stats (smaller) ===== */
+    /* ===== Stats ===== */
     .stats{
       display:grid; grid-template-columns:repeat(12, minmax(0,1fr)); gap:16px;
       margin:16px 0 18px;
@@ -131,11 +117,11 @@ body::before {
     .stat-label{color:var(--muted); font-size:13px; margin-top:6px}
     .stat-chip{font-size:11px; color:#8df0b3; background:rgba(48,209,88,.12); border:1px solid rgba(48,209,88,.25); padding:5px 9px; border-radius:999px}
 
-    /* ===== Toolbar (shorter search + spaced controls) ===== */
+    /* ===== Toolbar (no awkward spacer) ===== */
     .toolbar{
       margin:8px 0 8px;
       display:grid;
-      grid-template-columns:minmax(260px, 560px) 190px 1fr auto auto; /* search | sort | filler | dates | buttons */
+      grid-template-columns: minmax(260px,560px) 190px auto auto auto; /* search | sort | dates | refresh | copy-all */
       gap:14px; align-items:center;
     }
     .search{
@@ -198,7 +184,7 @@ body::before {
     .pill{
       padding:8px 14px; border-radius:999px; font-weight:700; font-size:13px;
       border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.06);
-      cursor:pointer; transition:transform .15s ease, background .15s ease, box-shadow .2s ease; /* pointer + hover */
+      cursor:pointer; transition:transform .15s ease, background .15s ease, box-shadow .2s ease;
     }
     .pill:hover{transform:translateY(-1px); background:rgba(255,255,255,.09); box-shadow:0 8px 18px rgba(0,0,0,.3)}
     .pill.blue{border-color:rgba(10,132,255,.35); background:linear-gradient(180deg, rgba(10,132,255,.20), rgba(10,132,255,.10)); color:#e6f3ff}
@@ -239,7 +225,7 @@ body::before {
 
     @media (max-width:1024px){
       .stat{grid-column:span 4}
-      .toolbar{grid-template-columns:1fr 180px 1fr auto auto}
+      .toolbar{grid-template-columns: 1fr 160px auto auto auto}
     }
     @media (max-width:760px){
       .stat{grid-column:span 6}
@@ -308,14 +294,13 @@ body::before {
           <option value="za">Z → A</option>
           <option value="tabs">Tabs (High → Low)</option>
         </select>
-        <div></div> <!-- spacer -->
         <div class="date-wrap">
           <input id="startDate" class="date" type="date" aria-label="Start date">
           <input id="endDate" class="date" type="date" aria-label="End date">
         </div>
         <div class="btn-row">
-          <button id="refreshBtn" class="btn btn-blue soft">Refresh</button>
-          <button id="copyAllBtn" class="btn btn-ghost">Copy All Links</button>
+          <button id="refreshBtn" class="btn btn-blue soft" title="Reload groups">Refresh</button>
+          <button id="copyAllBtn" class="btn btn-ghost" title="Copy links from the filtered view">Copy All Links</button>
         </div>
       </div>
 
@@ -523,13 +508,11 @@ body::before {
 
       filteredGroups = groups
         .filter(g => {
-          // text filter
           if(q){
             const inName = (g.name || '').toLowerCase().includes(q);
             const inUrls = (g.urls || []).some(u => (u || '').toLowerCase().includes(q));
             if(!inName && !inUrls) return false;
           }
-          // date range filter
           if(sVal || eVal){
             const d = new Date(g.createdAt || 0);
             if(sVal && d < sVal) return false;
@@ -557,20 +540,18 @@ body::before {
         <article class="card ${collapsed ? 'collapsed' : ''}" style="animation-delay:${idx*40}ms" id="card-${group.id}">
           <header class="card-head">
             <div>
-              <div class="title-row">
+              <div class="title-row" style="align-items:center; gap:10px;">
                 <div class="title">${escapeHtml(group.name || 'Untitled Group')}</div>
-                <span class="chip neutral">${tabCount} tabs</span>
-              </div>
-              <div class="meta-row" style="margin-top:8px">
-                <span class="chip">${escapeHtml(date)}</span>
+                <span class="chip neutral" title="Tabs in this group">${tabCount} tabs</span>
+                <span class="chip" title="Saved on">${escapeHtml(date)}</span>
               </div>
             </div>
             <div class="actions">
-              <button class="pill blue" onclick="openGroup('${group.id}')">Open All</button>
-              <button class="pill" onclick="toggleLinks('${group.id}')">${collapsed ? 'Show' : 'Hide'} Links</button>
-              <button class="pill" onclick="copyGroupLinks('${group.id}')">Copy</button>
-              <button class="pill" onclick="exportGroup('${group.id}')">Export</button>
-              <button class="pill red" onclick="deleteGroup('${group.id}')">Delete</button>
+              <button class="pill blue" title="Open all links in a new window" onclick="openGroup('${group.id}')">Open All</button>
+              <button class="pill" data-action="toggle" title="Show or hide the link list" onclick="toggleLinks('${group.id}')">${collapsed ? 'Show' : 'Hide'} Links</button>
+              <button class="pill" title="Copy this group’s links" onclick="copyGroupLinks('${group.id}')">Copy Links</button>
+              <button class="pill" title="Download this group as JSON" onclick="exportGroup('${group.id}')">Export JSON</button>
+              <button class="pill red" title="Delete this group" onclick="deleteGroup('${group.id}')">Delete</button>
             </div>
           </header>
           <div class="card-body">
@@ -598,8 +579,8 @@ body::before {
       const el = document.getElementById(`card-${groupId}`);
       if(!el) return;
       el.classList.toggle('collapsed');
-      // update button label without re-rendering all
-      const btn = [...el.querySelectorAll('.actions .pill')].find(b => /Links$/.test(b.textContent));
+      // update button label confidently (only the toggle button has data-action="toggle")
+      const btn = el.querySelector('.actions .pill[data-action="toggle"]');
       if(btn) btn.textContent = (collapsedState[groupId] ? 'Show' : 'Hide') + ' Links';
     }
 
@@ -656,8 +637,10 @@ body::before {
       );
     }
 
+    // respects filters
     function copyAllLinks(){
-      const all = groups.flatMap(g => g.urls || []);
+      const source = (filteredGroups && filteredGroups.length) ? filteredGroups : groups;
+      const all = source.flatMap(g => g.urls || []);
       if(!all.length){ showStatus('No links to copy', 'error'); return; }
       navigator.clipboard.writeText(all.join('\n')).then(
         ()=>showStatus(`Copied ${all.length} links`),
