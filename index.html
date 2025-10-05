@@ -297,22 +297,31 @@ function openGroup(groupId) {
   const group = groups.find(g => g.id === groupId);
   if (!group) return;
 
-  // Open all tabs in one synchronous user gesture
-  const container = document.createElement('div');
-  document.body.appendChild(container);
+  if (group.urls.length === 0) {
+    showStatus('No URLs found in this group.', 'error');
+    return;
+  }
 
-  group.urls.forEach(url => {
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.style.display = 'none';
-    container.appendChild(a);
-    a.click();
-  });
+  // Confirm if large group
+  if (group.urls.length > 10 && !confirm(`Open ${group.urls.length} tabs in a new window?`)) return;
 
-  container.remove();
-  showStatus(`Opened ${group.urls.length} tabs from "${group.name}"`);
+  // Open first tab to create the new window
+  const firstUrl = group.urls[0];
+  const newWindow = window.open(firstUrl, '_blank', 'noopener,noreferrer');
+
+  if (!newWindow) {
+    showStatus('Popup blocked. Please allow popups for this site.', 'error');
+    return;
+  }
+
+  // Open the remaining tabs in that same new window
+  setTimeout(() => {
+    group.urls.slice(1).forEach(url => {
+      newWindow.open(url, '_blank');
+    });
+  }, 500); // short delay to let first tab load
+
+  showStatus(`Opened ${group.urls.length} tabs from "${group.name}" in a new window.`);
 }
 
     async function deleteGroup(groupId) {
