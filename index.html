@@ -468,8 +468,11 @@
           </div>
           <div class="tab-preview">
             <div class="tab-list">
-              ${group.urls.slice(0,5).map(url =>
-                `<div class="tab-item">${escapeHtml(getDomainFromUrl(url))}</div>`
+              ${group.urls.slice(0,8).map(url =>
+                `<div class="tab-item">
+                  <img src="https://www.google.com/s2/favicons?sz=64&domain_url=${url}" alt="">
+                  <a href="${url}" target="_blank">${escapeHtml(url)}</a>
+                </div>`
               ).join('')}
               ${group.urls.length > 5 ? `<div class="tab-item">...and ${group.urls.length - 5} more</div>` : ''}
             </div>
